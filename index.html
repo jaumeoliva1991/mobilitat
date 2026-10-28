@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mobilitat sostenible · Hospital Universitari de Bellvitge</title>
+<style>
+    /* ==============================================================
+       COLORS CORPORATIUS
+       Substitueix aquests valors pels del manual d'identitat de l'HUB.
+       Tota la interfície en depèn.
+       ============================================================== */
+    :root {
+        --corporatiu: #c8102e;        /* vermell principal (barres, botó, enllaços) */
+        --corporatiu-fosc: #9b0c23;   /* hover */
+        --corporatiu-suau: #fbeaec;   /* fons de realçats */
+        --peu: #2b2f33;               /* peu institucional */
+        --sostenible: #2f7d4f;        /* missatges d'estalvi */
+        --sostenible-suau: #e9f4ee;
+
+        --text: #1f2a33;
+        --text-suau: #5a6772;
+        --fons: #f5f5f5;
+        --superficie: #ffffff;
+        --linia: #dddfe1;
+        --avis-fons: #fff5dc;
+        --avis-text: #6b4a00;
+        --error-fons: #fdecec;
+        --error-text: #9b1c1c;
+        --barra-co2: #c8102e;
+        --focus: #f2a900;
+        --radi: 4px;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --corporatiu: #ff5a6e;
+            --corporatiu-fosc: #e0435a;
+            --corporatiu-suau: #3a1a20;
+            --peu: #0b0f12;
+            --sostenible: #6cc794;
+            --sostenible-suau: #15301f;
+            --text: #eceff1;
+            --text-suau: #a9b2b9;
+            --fons: #121618;
+            --superficie: #1c2125;
+            --linia: #31383d;
+            --avis-fons: #3a2e12;
+            --avis-text: #f3d58a;
+            --error-fons: #3d1a1a;
+            --error-text: #ffb4b4;
+            --barra-co2: #ff5a6e;
+        }
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light dark; }
+    body {
+        margin: 0; background: var(--fons); color: var(--text);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 16px; line-height: 1.5;
+    }
+    .contenidor { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+    /* Barra institucional */
+    .barra { background: var(--superficie); color: var(--text); border-bottom: 4px solid var(--corporatiu); }
+    .barra .contenidor { display: flex; align-items: center; gap: 18px; min-height: 76px; }
+    .logo { display: flex; align-items: center; text-decoration: none; }
+    .logo img { height: 46px; width: auto; display: block; }
+    .logo img.logo-blanc { filter: brightness(0) invert(1); } /* capa que el fa blanc */
+    .logo-text { font-weight: 700; font-size: 1.15rem; line-height: 1.15; color: var(--corporatiu); }
+    .logo-text span { display: block; font-weight: 400; color: var(--text-suau); font-size: 0.85rem; }
+    .nom-eina { padding-left: 18px; border-left: 1px solid var(--linia); font-size: 1rem; font-weight: 700; color: var(--text); }
+    .area { margin-left: auto; font-size: 0.85rem; color: var(--text-suau); }
+
+    /* Capçalera de pàgina */
+    .titol-pagina { padding: 22px 0 26px; }
+    h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; color: var(--text); font-weight: 700; }
+    .subtitol { margin: 8px 0 0; max-width: 65ch; color: var(--text-suau); }
+
+    /* Formulari */
+    .formulari {
+        background: var(--superficie); border: 1px solid var(--linia); border-top: 4px solid var(--corporatiu);
+        border-radius: var(--radi); padding: 20px;
+        display: grid; grid-template-columns: 1fr 140px 140px auto; gap: 14px; align-items: end;
+    }
+    .camp label { display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; }
+    .camp input {
+        width: 100%; font: inherit; color: var(--text); background: var(--superficie);
+        padding: 11px 12px; border: 1px solid #a9b4bd; border-radius: var(--radi);
+    }
+    .camp input:focus { outline: none; border-color: var(--corporatiu); box-shadow: 0 0 0 3px color-mix(in srgb, var(--corporatiu) 22%, transparent); }
+    .camp-adreca { position: relative; }
+    .casella-discreta { grid-column: 1 / -1; display: inline-flex; align-items: center; gap: 6px; margin-top: -4px; font-size: 0.82rem; color: var(--text-suau); cursor: pointer; justify-self: start; }
+    .casella-discreta input { width: 15px; height: 15px; margin: 0; accent-color: var(--corporatiu); cursor: pointer; }
+    .suggeriments {
+        position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 2px);
+        margin: 0; padding: 4px 0; list-style: none;
+        background: var(--superficie); border: 1px solid var(--linia); border-radius: var(--radi);
+        box-shadow: 0 8px 20px rgba(0, 30, 50, 0.12); max-height: 320px; overflow-y: auto;
+    }
+    .suggeriments[hidden] { display: none; }
+    .suggeriments li { padding: 9px 12px; cursor: pointer; border-left: 3px solid transparent; }
+    .suggeriments li[aria-selected="true"], .suggeriments li:hover { background: var(--corporatiu-suau); border-left-color: var(--corporatiu); }
+    .sug-principal { display: block; font-weight: 700; }
+    .sug-secundari { display: block; font-size: 0.85rem; color: var(--text-suau); }
+    button.calcular {
+        font: inherit; font-weight: 700; background: var(--corporatiu); color: #fff;
+        border: none; border-radius: var(--radi); padding: 12px 22px; cursor: pointer; white-space: nowrap;
+    }
+    button.calcular:hover { background: var(--corporatiu-fosc); }
+    button.calcular:disabled { opacity: 0.6; cursor: wait; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* Resultats */
+    .resultats { margin-top: 24px; display: grid; gap: 8px; }
+    .estat { text-align: center; color: var(--text-suau); padding: 28px; }
+    .avis, .error { padding: 12px 14px; border-radius: var(--radi); font-size: 0.92rem; border-left: 4px solid currentColor; }
+    .avis { background: var(--avis-fons); color: var(--avis-text); }
+    .error { background: var(--error-fons); color: var(--error-text); }
+
+    .resum-co2 { background: var(--sostenible-suau); border-left: 4px solid var(--sostenible); border-radius: var(--radi); padding: 16px 20px; }
+    .resum-co2 p { margin: 0; max-width: 72ch; }
+    .resum-llista { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+    .resum-llista strong { color: var(--text); }
+    .resum-xifra { font-size: 1.4rem; font-weight: 700; color: var(--sostenible); line-height: 1.25; margin-bottom: 4px !important; }
+
+    .opcio {
+        background: var(--superficie); border: 1px solid var(--linia); border-radius: var(--radi);
+        padding: 16px 18px; display: grid; grid-template-columns: 210px 1fr auto; gap: 16px; align-items: center;
+    }
+    .opcio-mode { display: flex; gap: 12px; align-items: center; }
+    .icona { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--corporatiu-suau); color: var(--corporatiu); }
+    .icona svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .opcio h2 { font-size: 1rem; margin: 0; line-height: 1.3; }
+    .eco { display: inline-block; white-space: nowrap; margin-top: 3px; font-size: 0.75rem; font-weight: 700; color: var(--sostenible); }
+
+    .ruta, .trajecte-sentit { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .trajectes { display: grid; gap: 10px; }
+    .tarifa { font-weight: 700; color: var(--text); }
+    .sentit { flex-basis: 100%; font-size: 0.75rem; font-weight: 700; color: var(--text-suau); }
+    .ruta .fletxa, .trajecte-sentit .fletxa { color: var(--text-suau); font-size: 0.85rem; }
+    .text { color: var(--text-suau); font-size: 0.92rem; }
+    .placa { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; padding: 3px 8px; border-radius: 3px; line-height: 1.4; border: 1px solid transparent; }
+    .placa-via-rapida { background: #0050a0; color: #fff; }
+    .placa-via { background: transparent; color: var(--text); border-color: #a9b4bd; }
+    .placa-peatge { background: var(--avis-fons); color: var(--avis-text); }
+    .placa-tp { color: #fff; }
+    .placa-tp small { font-weight: 400; opacity: 0.9; font-size: 0.75rem; }
+    .horari { flex-basis: 100%; font-size: 0.85rem; color: var(--text-suau); margin-top: 2px; }
+
+    .detall { flex-basis: 100%; margin-top: 6px; font-size: 0.85rem; }
+    .detall summary { cursor: pointer; color: var(--corporatiu); font-weight: 700; }
+    .detall ol { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; max-height: 320px; overflow-y: auto; border-left: 2px solid var(--linia); }
+    .detall li { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding-left: 10px; }
+    .detall-km { color: var(--text-suau); font-variant-numeric: tabular-nums; }
+    .detall li small { display: block; color: var(--text-suau); }
+    .xifres { display: grid; grid-template-columns: repeat(4, minmax(72px, auto)); gap: 4px 20px; margin: 0; text-align: right; }
+    .xifres dt { font-size: 0.75rem; color: var(--text-suau); }
+    .xifres dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .xifres dd.guany { color: var(--sostenible); } /* imports negatius: hi surts guanyant */
+    .xifres dd small { display: block; font-weight: 400; font-size: 0.78rem; color: var(--text-suau); }
+
+    .co2 { grid-column: 1 / -1; display: grid; grid-template-columns: 210px 1fr; gap: 16px; align-items: center; padding-top: 12px; border-top: 1px solid var(--linia); }
+    .co2-barra { height: 6px; background: var(--fons); border-radius: 3px; overflow: hidden; }
+    .co2-barra span { display: block; height: 100%; background: var(--barra-co2); }
+    .co2-text { margin: 0; font-size: 0.88rem; color: var(--text-suau); }
+    .co2-text strong { color: var(--text); }
+    .co2-estalvi { display: inline-block; margin-left: 6px; color: var(--sostenible); font-weight: 700; }
+
+    .notes { margin-top: 24px; font-size: 0.85rem; color: var(--text-suau); display: grid; gap: 8px; max-width: 78ch; }
+    .notes p { margin: 0; }
+
+    /* Peu institucional */
+    .peu { margin-top: 40px; background: var(--peu); color: #d9dde0; font-size: 0.85rem; border-top: 4px solid var(--corporatiu); }
+    .peu .contenidor { padding-top: 22px; padding-bottom: 22px; display: grid; gap: 4px; }
+    .peu strong { color: #fff; }
+    .peu p { margin: 0; }
+    .peu .autoria { margin-top: 8px; font-size: 0.75rem; opacity: 0.6; }
+    .peu .autoria a { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
+    .peu .autoria a:hover { opacity: 1; border-bottom-style: solid; }
+    .peu a { color: #fff; }
+
+    .enllac-extern { flex-basis: 100%; font-size: 0.85rem; font-weight: 700; color: var(--corporatiu); text-decoration: none; margin-top: 2px; }
+    .enllac-extern:hover { text-decoration: underline; }
+    .ocupants { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.8rem; color: var(--text-suau); }
+    .ocupants select { font: inherit; font-weight: 700; color: var(--text); background: var(--superficie); border: 1px solid #a9b4bd; border-radius: var(--radi); padding: 2px 6px; }
+    .accio-informe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px; }
+    .accio-informe span { font-size: 0.85rem; color: var(--text-suau); }
+    @media (max-width: 820px) {
+        .area { display: none; }
+        .formulari { grid-template-columns: 1fr 1fr; }
+        .camp-adreca, .formulari button.calcular { grid-column: 1 / -1; }
+        .opcio { grid-template-columns: 1fr; gap: 12px; }
+        .xifres { grid-template-columns: repeat(2, 1fr); text-align: left; border-top: 1px solid var(--linia); padding-top: 10px; }
+        .co2 { grid-template-columns: 1fr; gap: 6px; }
+    }
+    @media (max-width: 520px) {
+        .barra .contenidor { min-height: 64px; gap: 12px; }
+        .logo img { height: 36px; }
+        .nom-eina { padding-left: 12px; font-size: 0.9rem; }
+        .formulari { padding: 16px; }
+    }
+</style>
+</head>
+<body>
+<header class="barra">
+    <div class="contenidor">
+        <a class="logo" id="logo-capcalera" href="https://bellvitgehospital.cat/ca" aria-label="Hospital Universitari de Bellvitge">
+            <span class="logo-text">Bellvitge<span>Hospital Universitari</span></span>
+        </a>
+        <span class="nom-eina">Mobilitat sostenible</span>
+    </div>
+</header>
+
+<div class="contenidor">
+    <div class="titol-pagina">
+        <h1>Com vens a treballar?</h1>
+        <p class="subtitol">Compara el temps, el cost i les emissions de cada mitjà de transport entre casa teva i l'hospital, segons el teu horari.</p>
+    </div>
+<main>
+    <form class="formulari" id="formulari" autocomplete="off" novalidate>
+        <div class="camp camp-adreca">
+            <label for="adreca">Adreça de casa</label>
+            <input type="text" id="adreca" placeholder="Ex.: Carrer Major 12, Sant Boi de Llobregat"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggeriments">
+            <ul class="suggeriments" id="suggeriments" role="listbox" hidden></ul>
+        </div>
+        <div class="camp">
+            <label for="hora">Hora d'entrada</label>
+            <input type="time" id="hora" value="08:00">
+        </div>
+        <div class="camp">
+            <label for="hora-sortida">Hora de sortida</label>
+            <input type="time" id="hora-sortida" value="15:00">
+        </div>
+        <button type="submit" class="calcular" id="calcular">Comparar opcions</button>
+        <label class="casella-discreta"><input type="checkbox" id="evitar-peatges"> Evitar peatges en cotxe i moto</label>
+    </form>
+
+    <section class="resultats" id="resultats" aria-live="polite"></section>
+
+    <div class="notes">
+        <p>El transport públic es calcula amb el planificador de TMB per arribar a l'hora d'entrada i tornar a casa a partir de l'hora de sortida, amb els horaris d'un dia laborable (encara que facis la consulta en cap de setmana). Si l'hora de sortida és anterior a la d'entrada, es considera un torn de nit que acaba l'endemà. En cotxe i moto, el temps inclou el trànsit habitual a l'hora d'entrada i de sortida. En bicicleta i a peu, la tornada es considera el mateix recorregut a l'inrevés. El cost és el de la T-usual segons les zones del sistema tarifari integrat, amb la tarifa metropolitana per als municipis de l'AMB. El temps que es mostra és la durada del viatge. La ruta es tria de manera aproximada, seguint la lògica dels desplaçaments diaris: trajectes ràpids, amb pocs transbords i caminades curtes.</p>
+        <p>Les xifres anuals es calculen amb 11 mesos laborables (220 dies, anada i tornada). En cotxe i moto, el combustible, el cost i el CO₂ surten del consum mitjà estimat (7,7 i 3,9 litres cada 100 km); en el cotxe compartit, el combustible i el CO₂ es reparteixen entre les persones que el comparteixen i el cost segueix les tarifes de Karos. En el transport públic, el CO₂ es calcula tram a tram amb factors mitjans per a cada mitjà.</p>
+    </div>
+
+
+</main>
+</div>
+
+<footer class="peu">
+    <div class="contenidor">
+        <p><strong>Hospital Universitari de Bellvitge.</strong> Institut Català de la Salut. Eina orientativa per a professionals de l'hospital. No es desa cap adreça ni cap dada personal.</p>
+        <p class="autoria">Desenvolupat per Jaume Oliva Sala. <a href="mailto:jolivas.apms.ics@gencat.cat">jolivas.apms.ics@gencat.cat</a></p>
+    </div>
+</footer>
+
+
+<script>
+    const CLAU_ORS = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjllZjZkODM5ZjY2MDQ0ZWU5ZGY4OTc5ZTA3YTlmZGNlIiwiaCI6Im11cm11cjY0In0=";
+    const APP_ID_TMB = "82538d8a";
+    const APP_KEY_TMB = "c53966ba453f147d9d2c18a61ab5bab5";
+    // Clau gratuïta de TomTom (developer.tomtom.com). Amb clau, el cotxe i la
+    // moto es calculen amb el trànsit previst a l'hora d'entrada i de sortida i
+    // amb els noms i números reals de les vies. Sense clau es fa servir ORS.
+    const CLAU_TOMTOM = "0vnZ2awJmmc6CEscgvIWVAvmRZhxWiZx";
+
+    const DESTI_LAT = 41.3438;
+    const DESTI_LON = 2.1049;
+    // Destí per al cotxe: entrada principal de l'hospital (Carrer de la Feixa
+    // Llarga). Amb el punt general, la ruta feia voltes i mitja volta al final.
+    const ACCES_COTXE = { lat: 41.34477, lon: 2.10423 };
+    // Accessos en cotxe (coordenades de Google Places). Es calcula la ruta cap a
+    // tots tres i es tria la més ràpida, perquè segons d'on vens convé un o altre.
+    const ACCESSOS_COTXE = [
+        { nom: "l'entrada principal (Feixa Llarga)", lat: 41.34477, lon: 2.10423 },
+        { nom: "l'aparcament del carrer de la Residència", lat: 41.34495, lon: 2.10566 },
+        { nom: "l'aparcament de la Feixa Llarga", lat: 41.34329, lon: 2.10340 }
+    ];
+    const TRAJECTES_MES = 40; // 20 dies x anada i tornada
+    // Rectangle aproximat de Catalunya per acotar el geocodificador.
+    const CAT = { minLon: 0.15, maxLon: 3.35, minLat: 40.5, maxLat: 42.9 };
+
+    function normalitzarMunicipi(m) {
+        return String(m || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[’`]/g, "'").replace(/^(l'|el |la |les |els )\s*/, '').replace(/\s+/g, ' ').trim();
+    }
+
+    // Sistema tarifari integrat (ATM): zona i sector de cada municipi, segons TMB.
+    // Clau: nom normalitzat (minúscules, sense accents ni article inicial).
+    const ZONES_MUNICIPIS = {"abrera":"3B","aguilar de segarra":"6E","aiguafreda":"4F","alella":"2E","alpens":"6H","ametlla del valles":"4F","arboc":"5B","arenys de mar":"4H","arenys de munt":"4H","argencola":"6C","argentona":"3E","artes":"6E","avia":"7E","avinyo":"6E","avinyonet del penedes":"3B","badalona":"1","badia del valles":"2C","baga":"7F","balenya":"5F","balsareny":"6E","barbera del valles":"2C","barcelona":"1","begues":"2A","bellprat":"5C","bellvei":"5B","berga":"7F","bigues i riells":"4F","biosca":"7C","blanes":"5H","borreda":"7F","breda":"4G","bruc":"5D","brull":"5F","cabanyes":"4B","cabrera d'anoia":"4C","cabrera de mar":"3E","cabrils":"2E","calaf":"6C","calafell":"5A","calders":"6E","caldes d'estrac":"3E","caldes de montbui":"3D","calella":"4H","calldetenes":"6F","callus":"6E","calonge de segarra":"6C","campelles":"7H","campins":"4G","camprodon":"7H","canet de mar":"4H","canovelles":"3D","canoves i samalus":"4F","canyelles":"4A","capellades":"5C","capolat":"7F","cardedeu":"3D","cardona":"6E","carme":"5C","casserres":"7E","castell de l'areny":"7F","castellar de la ribera":"7C","castellar del riu":"7F","castellar de n'hug":"7F","castellar del valles":"3C","castellbell i el vilar":"5E","castellbisbal":"2B","castellcir":"4F","castelldefels":"1","castellet i la gornal":"4B","castellfollit del boix":"6E","castellfollit de riubregos":"6C","castellgali":"5E","castellnou de bages":"6E","castelloli":"5D","castelltercol":"4F","castellvi de la marca":"4B","castellvi de rosanes":"3B","centelles":"5F","cercs":"7F","cerdanyola del valles":"2C","cervello":"2B","clariana de cardener":"7C","collbato":"4D","collsuspina":"5F","coma i la pedra":"7D","copons":"6C","corbera de llobregat":"2B","cornella de llobregat":"1","cubelles":"4A","cunit":"5A","dosrius":"3E","esparreguera":"3B","espinelves":"5F","esplugues de llobregat":"1","espunyola":"7E","esquirol":"6H","estany":"6E","figaro-montmany":"4F","figols":"7F","fogars de montclus":"4G","fogars de la selva":"5H","folgueroles":"6F","fonollosa":"6E","font-rubi":"4B","franqueses del valles":"3D","gaia":"6E","gallifa":"4F","garraf":"2A","garriga":"4F","gava":"1","gelida":"3B","gironella":"7E","gisclareny":"7F","gombren":"7H","gosol":"7F","granada":"4B","granera":"4F","granollers":"3D","guardiola de bergueda":"7F","guixers":"7D","gurb":"6F","gualba":"4G","hospitalet de llobregat":"1","hostalets de pierola":"4C","hostalric":"5G","igualada":"6B","jorba":"6B","llacuna":"5C","lladurs":"7D","llagosta":"2D","llanars":"7H","llica d'amunt":"3D","llica de vall":"3D","llinars del valles":"3D","llobera":"7C","llosses":"7G","lluca":"6H","macanet de la selva":"6G","malgrat de mar":"5H","malla":"5F","manlleu":"6H","manresa":"6D","marganell":"5E","martorell":"3B","martorelles":"2D","masies de roda":"6F","masies de voltrega":"6H","masnou":"2E","masquefa":"4C","massanes":"6G","matadepera":"3C","mataro":"3E","mediona":"4B","moia":"5F","molins de rei":"2B","mollet del valles":"2D","mollo":"7H","molsosa":"7C","monistrol de calders":"6E","monistrol de montserrat":"4Z","montcada i reixac":"1","montclar":"7E","montesquiu":"6H","montgat":"1","montmajor":"7E","montmaneu":"6C","montmelo":"2D","montornes del valles":"2D","montseny":"4G","muntanyola":"5F","mura":"5E","navarcles":"6D","navas":"6E","naves":"7D","nou de bergueda":"7F","oden":"7D","odena":"6B","ogassa":"7H","olerdola":"4B","olesa de bonesvalls":"3B","olesa de montserrat":"3B","olius":"7C","olvan":"7E","olivella":"3A","olost":"6H","oris":"6H","orista":"6F","orpi":"5C","orrius":"3E","pacs del penedes":"4B","palafolls":"5H","palau-solita i plegamans":"2D","palleja":"2B","palma de cervello":"2B","papiol":"2B","pardines":"7H","parets del valles":"2D","perafita":"6H","piera":"4C","pineda de mar":"4H","pinell de solsones":"7C","pinos":"7C","pla del penedes":"4B","planoles":"7H","pobla de claramunt":"5C","pobla de lillet":"7F","polinya":"2D","pont de vilomara i rocafort":"5E","pontons":"4B","prat de llobregat":"1","prats de llucanes":"6H","prats de rei":"6C","premia de dalt":"2E","premia de mar":"2E","puigdalber":"4B","puig-reig":"7E","pujalt":"6C","quar":"7F","queralbs":"7H","rajadell":"6E","rellinars":"4E","ribes de freser":"7H","riells i viabrea":"4G","riner":"7C","ripoll":"7G","ripollet":"2C","roca del valles":"3D","roda de ter":"6F","rubi":"2C","rubio":"6B","rupit i pruit":"6H","sabadell":"2C","sagas":"7E","saldes":"7F","sallent":"6E","sant adria de besos":"1","sant agusti de llucanes":"6H","sant andreu de la barca":"2B","sant andreu de llavaneres":"3E","sant antoni de vilamajor":"3D","sant bartomeu del grau":"6F","sant boi de llobregat":"1","sant boi de llucanes":"6H","sant cebria de vallalta":"4H","sant celoni":"4G","sant climent de llobregat":"2B","sant cugat del valles":"2C","sant cugat sesgarrigues":"4B","sant esteve de palautordera":"4G","sant esteve sesrovires":"3B","sant feliu de codines":"4F","sant feliu de llobregat":"1","sant feliu sasserra":"6E","sant fost de campsentelles":"2D","sant fruitos de bages":"6D","sant hipolit de voltrega":"6H","sant iscle de vallalta":"4H","sant jaume de frontanya":"7F","sant jaume de les abadesses":"7G","sant joan de vilatorrada":"6D","sant joan despi":"1","sant julia de cerdanyola":"7F","sant julia de vilatorta":"6F","sant just desvern":"1","sant llorenc d'hortons":"3B","sant llorenc de morunys":"7D","sant llorenc savall":"3C","sant marti d'albars":"6H","sant marti de centelles":"4F","sant marti de tous":"6B","sant marti sarroca":"4B","sant marti sesgueioles":"6C","sant mateu de bages":"6E","sant pau de seguries":"7H","sant pere de ribes":"3A","sant pere de riudebitlles":"4B","sant pere de torello":"6H","sant pere sallavinera":"6C","sant pere de vilamajor":"4G","sant pol de mar":"4H","sant quinti de mediona":"4B","sant quirze de besora":"6H","sant quirze del valles":"2C","sant quirze safaja":"4F","sant sadurni d'anoia":"3B","sant sadurni d'osormort":"6F","sant salvador de guardiola":"6E","sant vicenc de castellet":"5E","sant vicenc de montalt":"3E","sant vicenc de torello":"6H","sant vicenc dels horts":"2B","santa coloma de cervello":"2B","santa coloma de gramenet":"1","santa cecilia de voltrega":"6H","santa eugenia de berga":"6F","santa eulalia de riuprimer":"6F","santa eulalia de roncana":"3D","santa fe del penedes":"4B","santa margarida de montbui":"6B","santa margarida i els monjos":"4B","santa maria de besora":"6H","santa maria de martorelles":"2D","santa maria de merles":"7E","santa maria de miralles":"5C","santa maria d'olo":"6E","santa maria de palautordera":"4G","santa oliva":"5B","santa perpetua de mogoda":"2D","santa susanna":"5H","santpedor":"6D","sentmenat":"3D","setcases":"7H","seva":"5F","sitges":"3A","sobremunt":"6H","solsona":"7C","sora":"6H","subirats":"3B","suria":"6E","tagamanent":"4F","talamanca":"5E","taradell":"5F","tavernoles":"6F","tavertet":"6H","teia":"2E","terrassa":"3C","tiana":"1","tona":"5F","tora":"7C","tordera":"5H","torello":"6H","torre de claramunt":"5C","torrelavit":"4B","torrelles de foix":"4B","torrelles de llobregat":"2B","toses":"7H","ullastrell":"3C","vacarisses":"4E","vallbona d'anoia":"5C","vallcebre":"7F","vallfogona de ripolles":"7G","vallgorguina":"4G","vallirana":"2B","vallromanes":"2D","veciana":"6C","vendrell":"6A","vic":"6F","vidra":"6H","vilada":"7F","viladecans":"1","viladecavalls":"3C","viladrau":"5F","vilafranca del penedes":"4B","vilalba sasserra":"4G","vilallonga de ter":"7H","vilanova de sau":"6F","vilanova del cami":"6B","vilanova del valles":"3D","vilanova i la geltru":"4A","vilassar de dalt":"2E","vilassar de mar":"2E","vilobi del penedes":"4B","viver i serrateix":"7E"};
+    // Municipis de corona 2 de l'AMB: amb la T-usual compten com a 1 zona
+    // per anar a qualsevol municipi de corona 1 (tarifa metropolitana).
+    const METROPOLITANS_CORONA2 = new Set(["badia del valles", "barbera del valles", "begues", "castellbisbal", "cerdanyola del valles", "cervello", "corbera de llobregat", "molins de rei", "palleja", "palma de cervello", "papiol", "ripollet", "sant andreu de la barca", "sant climent de llobregat", "sant cugat del valles", "sant vicenc dels horts", "santa coloma de cervello", "torrelles de llobregat"]);
+    // Preu mensual de la T-usual segons el nombre de zones.
+    const PREUS_TUSUAL = { 1: 22.80, 2: 30.55, 3: 42.70, 4: 52.15, 5: 59.60, 6: 63.85, 7: 67.65 };
+
+    // L'hospital és a l'Hospitalet (corona 1). Un trajecte des d'una corona N
+    // necessita un títol de N zones, tret de la tarifa metropolitana.
+    // A la corona 7 caldria comptar sectors: s'aplica 7 zones com a aproximació.
+    // Noms que els serveis d'adreces escriuen malament. Afegeix-n'hi si en surten més.
+    const CORRECCIONS_NOMS = { 'Valdoreix': 'Valldoreix' };
+    function corregirNom(t) {
+        let out = String(t || '');
+        for (const [mal, be] of Object.entries(CORRECCIONS_NOMS)) out = out.replace(new RegExp(`\\b${mal}\\b`, 'gi'), be);
+        return out;
+    }
+
+    // Nuclis que no són municipi i el municipi al qual pertanyen (per a la zona tarifària).
+    const NUCLIS_MUNICIPI = {
+        'valldoreix': 'Sant Cugat del Vallès', 'valdoreix': 'Sant Cugat del Vallès',
+        'floresta': 'Sant Cugat del Vallès', 'mira-sol': 'Sant Cugat del Vallès', 'mirasol': 'Sant Cugat del Vallès',
+        'bellaterra': 'Cerdanyola del Vallès'
+    };
+
+    // Accepta diversos noms candidats (nucli, municipi...) i fa servir el primer que trobi.
+    function tarifaTransport(...noms) {
+        let clau = null, nomTarifa = null;
+        for (const n of noms.filter(Boolean)) {
+            const k = normalitzarMunicipi(n);
+            if (ZONES_MUNICIPIS[k]) { clau = k; nomTarifa = n; break; }
+            if (NUCLIS_MUNICIPI[k]) { clau = normalitzarMunicipi(NUCLIS_MUNICIPI[k]); nomTarifa = NUCLIS_MUNICIPI[k]; break; }
+        }
+        const zona = clau && ZONES_MUNICIPIS[clau];
+        if (!zona) return null;
+        const corona = Number(zona[0]);
+        const metropolitana = METROPOLITANS_CORONA2.has(clau);
+        const zones = metropolitana ? 1 : corona;
+        return { zona, zones, metropolitana, preu: PREUS_TUSUAL[zones], aproximada: corona === 7, municipiTarifa: nomTarifa };
+    }
+
+    // Vehicle privat: tot es calcula a partir dels litres, perquè cost,
+    // combustible i CO2 quadrin entre ells. Valors orientatius.
+    const COMBUSTIBLE = {
+        cotxe: 7.7,          // litres cada 100 km (turisme mitjà, ús real)
+        moto: 3.9,
+        preuLitre: 1.55,     // €/l
+        co2PerLitre: 2350,   // g de CO2 per litre cremat (gasolina ~2,3 kg; gasoil ~2,6 kg)
+        ocupantsKaros: 2     // la teva part del cotxe compartit
+    };
+    // Transport públic: grams de CO2 per passatger i km. Substitueix-los pels
+    // de la guia de l'Oficina Catalana del Canvi Climàtic si vols xifres oficials.
+    const FACTORS_CO2 = {
+        BUS: 80, SUBWAY: 25, TRAM: 25, RAIL: 30, TRANSIT: 60
+    };
+    const TRAJECTES_ANY = 440; // 11 mesos laborables x 40 trajectes
+    const MESOS_LABORABLES = 11;
+
+    // ------------------------------------------------------------------
+    // LOGOTIP I COLOR CORPORATIU
+    // ------------------------------------------------------------------
+    // Logotip oficial en SVG. Es mostra amb els colors originals (en mode fosc, en blanc).
+    const URL_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/bb/Hospital_Universitari_de_Bellvitge.svg";
+    // Vermell corporatiu. L'app el llegeix del logotip en carregar-se i l'escriu a
+    // la consola: copia'l aquí perquè quedi fix encara que el logotip no carregui.
+    let COLOR_CORPORATIU = "#c8102e";
+
+    let promesaSVG = null;
+    const textLogoSVG = () => promesaSVG ??= fetchAmbTemps(URL_LOGO, {}, 5000).then(r => r.ok ? r.text() : null).catch(() => null);
+
+    function hexARgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+    const rgbAHex = c => '#' + c.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+    const barrejar = (h, amb, t) => { const a = hexARgb(h), b = hexARgb(amb); return rgbAHex(a.map((v, i) => v + (b[i] - v) * t)); };
+
+    // El color amb més saturació que més es repeteix al SVG (descarta blancs, negres i grisos).
+    function colorDelLogo(svg) {
+        const comptador = {};
+        const afegir = hex => {
+            const [r, g, b] = hexARgb(hex), max = Math.max(r, g, b), min = Math.min(r, g, b);
+            if (max - min < 60) return; // gris, blanc o negre
+            comptador[hex] = (comptador[hex] || 0) + 1;
+        };
+        for (const m of svg.matchAll(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-fA-F])/g)) {
+            let h = m[1].toLowerCase(); if (h.length === 3) h = h.split('').map(c => c + c).join('');
+            afegir('#' + h);
+        }
+        for (const m of svg.matchAll(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g)) afegir(rgbAHex([+m[1], +m[2], +m[3]]));
+        return Object.entries(comptador).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    }
+
+    const foscaActiva = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function aplicarColorCorporatiu(c) {
+        COLOR_CORPORATIU = c;
+        const arrel = document.documentElement.style;
+        if (!foscaActiva()) {
+            arrel.setProperty('--corporatiu', c);
+            arrel.setProperty('--corporatiu-fosc', barrejar(c, '#000000', 0.22));
+            arrel.setProperty('--corporatiu-suau', barrejar(c, '#ffffff', 0.9));
+            arrel.setProperty('--barra-co2', c);
+        }
+    }
+
+    // Versió en negatiu per a fons fosc: els colors passen a blanc i els
+    // blancs (detalls interiors) passen al color de fons, perquè no es perdin.
+    function versioBlanca(svg, fons) {
+        const esBlanc = hex => { const [r, g, b] = hexARgb(hex); return r > 235 && g > 235 && b > 235; };
+        const canvia = hex => esBlanc(hex) ? fons : '#ffffff';
+        let out = svg
+            .replace(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-fA-F])/g, (m, h) => canvia('#' + (h.length === 3 ? h.split('').map(c => c + c).join('') : h).toLowerCase()))
+            .replace(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g, (m, r, g, b) => canvia(rgbAHex([+r, +g, +b])))
+            .replace(/\b(fill|stroke)\s*=\s*["'](black|white)["']/gi, (m, at, c) => `${at}="${c.toLowerCase() === 'white' ? fons : '#ffffff'}"`);
+        // Els elements sense color explícit són negres per defecte: els fem blancs.
+        out = out.replace(/<svg\b/, '<svg fill="#ffffff"');
+        return out;
+    }
+
+    function posarLogo(src, ambFiltre) {
+        const img = new Image();
+        img.alt = 'Hospital Universitari de Bellvitge';
+        if (ambFiltre) img.className = 'logo-blanc';
+        img.onload = () => { const l = document.getElementById('logo-capcalera'); l.innerHTML = ''; l.appendChild(img); };
+        img.src = src; // si no carrega, es queda el text
+    }
+
+    (async function iniciarLogo() {
+        // En mode clar, el logotip es pot mostrar de seguida amb els colors originals.
+        if (!foscaActiva()) posarLogo(URL_LOGO, false);
+        const svg = await textLogoSVG();
+        const c = svg && colorDelLogo(svg);
+        if (c) {
+            aplicarColorCorporatiu(c);
+            console.log(`Color corporatiu detectat al logotip: ${c}. Copia'l a COLOR_CORPORATIU perquè quedi fix.`);
+        }
+        if (!foscaActiva()) return;
+        // Mode fosc: logotip en blanc sobre el fons fosc de la barra.
+        const fons = getComputedStyle(document.documentElement).getPropertyValue('--superficie').trim() || '#1c2125';
+        if (svg) posarLogo(URL.createObjectURL(new Blob([versioBlanca(svg, fons)], { type: 'image/svg+xml' })), false);
+        else posarLogo(URL_LOGO, true); // sense accés al codi del SVG: capa blanca amb filtre
+    })();
+
+    let evitarPeatges = false; // casella "Evitar peatges" del formulari
+
+    class ErrorXarxa extends Error {}
+
+    // Petició amb límit de temps: si el servei no respon, es talla i l'app continua
+    // amb els altres serveis en lloc de quedar-se esperant.
+    async function fetchAmbTemps(url, opcions = {}, ms = 15000) {
+        const controller = new AbortController();
+        const temporitzador = setTimeout(() => controller.abort(), ms);
+        try { return await fetch(url, { ...opcions, signal: controller.signal }); }
+        finally { clearTimeout(temporitzador); }
+    }
+    const esErrorDeXarxa = e => e instanceof TypeError || e?.name === 'AbortError' || e instanceof ErrorXarxa;
+
+    function esc(text) {
+        return String(text ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function properaArribada(horaEntrada) {
+        const [h, m] = String(horaEntrada || '08:00').split(':').map(Number);
+        const ara = new Date();
+        const d = new Date(ara);
+        d.setHours(Number.isFinite(h) ? h : 8, Number.isFinite(m) ? m : 0, 0, 0);
+        if (d <= ara) d.setDate(d.getDate() + 1);
+        while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+        return d;
+    }
+
+    // La sortida és el mateix dia que l'entrada; si l'hora és anterior o igual
+    // (torn de nit), és l'endemà.
+    function properaSortida(arribada, horaSortida) {
+        const [h, m] = String(horaSortida || '15:00').split(':').map(Number);
+        const d = new Date(arribada);
+        d.setHours(Number.isFinite(h) ? h : 15, Number.isFinite(m) ? m : 0, 0, 0);
+        if (d <= arribada) d.setDate(d.getDate() + 1);
+        return d;
+    }
+
+    const formatHora = ms => { const d = new Date(ms); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+    function formatDuradaMinuts(minuts) {
+        if (!Number.isFinite(minuts) || minuts < 0) return 'No disponible';
+        if (minuts < 60) return `${minuts} min`;
+        const h = Math.floor(minuts / 60), m = minuts % 60;
+        return m === 0 ? `${h} h` : `${h} h ${m} min`;
+    }
+
+    function distanciaMetres(lat1, lon1, lat2, lon2) {
+        if (![lat1, lon1, lat2, lon2].every(Number.isFinite)) return Infinity;
+        const R = 6371000, toRad = d => d * Math.PI / 180;
+        const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(a));
+    }
+    const distAlDesti = p => distanciaMetres(Number(p?.lat), Number(p?.lon), DESTI_LAT, DESTI_LON);
+
+    // ------------------------------------------------------------------
+    // AUTOCOMPLETAT D'ADRECES (ORS / Pelias)
+    // ------------------------------------------------------------------
+    const inputAdreca = document.getElementById('adreca');
+    const llistaSug = document.getElementById('suggeriments');
+    let seleccio = null, suggeriments = [], actiu = -1, temporitzador = null, peticioId = 0;
+
+    function paramsGeocoder() {
+        return `api_key=${CLAU_ORS}&boundary.country=ES` +
+            `&boundary.rect.min_lon=${CAT.minLon}&boundary.rect.max_lon=${CAT.maxLon}` +
+            `&boundary.rect.min_lat=${CAT.minLat}&boundary.rect.max_lat=${CAT.maxLat}` +
+            `&focus.point.lat=${DESTI_LAT}&focus.point.lon=${DESTI_LON}`;
+    }
+
+    function featureAOrigen(f) {
+        const p = f.properties || {};
+        const c = f.geometry.coordinates;
+        const municipi = corregirNom(p.locality || p.localadmin || p.county || '');
+        const nom = corregirNom(p.name || '');
+        const mateix = nom && municipi && nom.toLowerCase() === municipi.toLowerCase();
+        return {
+            principal: nom || municipi,
+            secundari: mateix ? (p.county || '') : municipi,
+            // Només carrer i municipi: la comunitat i el país no aporten res.
+            etiqueta: mateix ? nom : [nom, municipi].filter(Boolean).join(', '),
+            municipi,
+            municipiAdmin: corregirNom(p.localadmin || ''),
+            lat: c[1], lon: c[0],
+            aproximada: !['address', 'street', 'venue'].includes(p.layer)
+        };
+    }
+
+    inputAdreca.addEventListener('input', () => {
+        seleccio = null;
+        clearTimeout(temporitzador);
+        const q = inputAdreca.value.trim();
+        if (q.length < 3) return tancarSuggeriments();
+        temporitzador = setTimeout(() => buscarSuggeriments(q), 300);
+    });
+
+    async function buscarSuggeriments(q) {
+        const id = ++peticioId;
+        try {
+            let llista = null;
+            try {
+                const r = await fetchAmbTemps(`https://api.openrouteservice.org/geocode/autocomplete?${paramsGeocoder()}` +
+                    `&layers=address,street,venue,locality&size=6&text=${encodeURIComponent(q)}`);
+                if (r.ok) llista = ((await r.json()).features || []).map(featureAOrigen);
+                else console.warn(`Autocompletat ORS: HTTP ${r.status}${r.status === 429 ? ' (quota esgotada)' : ''}. Es prova Photon.`);
+            } catch (e) { console.warn('Autocompletat ORS no disponible. Es prova Photon.', e); }
+            // Reserva: Photon (OpenStreetMap), gratuït i sense clau.
+            if (!llista || !llista.length) llista = await suggerimentsPhoton(q);
+            if (id !== peticioId) return; // ja hi ha una cerca més nova
+            suggeriments = llista;
+            actiu = -1;
+            pintarSuggeriments();
+        } catch (e) {
+            console.warn('Autocompletat no disponible', e);
+        }
+    }
+
+    async function suggerimentsPhoton(q) {
+        try {
+            const r = await fetchAmbTemps(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6` +
+                `&lat=${DESTI_LAT}&lon=${DESTI_LON}&bbox=${CAT.minLon},${CAT.minLat},${CAT.maxLon},${CAT.maxLat}`);
+            if (!r.ok) { console.warn(`Autocompletat Photon: HTTP ${r.status}`); return []; }
+            return ((await r.json()).features || []).map(f => {
+                const p = f.properties || {}, c = f.geometry.coordinates;
+                const municipi = corregirNom(p.city || p.town || p.village || p.county || '');
+                const carrer = p.street ? [p.street, p.housenumber].filter(Boolean).join(' ') : '';
+                const principal = carrer && p.housenumber ? carrer : (p.name || carrer || municipi);
+                return {
+                    principal, secundari: municipi,
+                    etiqueta: [principal, municipi].filter((v, i, a) => v && a.indexOf(v) === i).join(', '),
+                    municipi, municipiAdmin: corregirNom(p.county || ''), lat: c[1], lon: c[0],
+                    aproximada: !p.housenumber && ['city', 'town', 'village', 'district', 'county', 'state', 'locality'].includes(p.type)
+                };
+            });
+        } catch (e) { console.warn('Autocompletat Photon no disponible', e); return []; }
+    }
+
+    function pintarSuggeriments() {
+        if (!suggeriments.length) return tancarSuggeriments();
+        llistaSug.innerHTML = suggeriments.map((s, i) => `
+            <li role="option" id="sug-${i}" aria-selected="${i === actiu}" data-i="${i}">
+                <span class="sug-principal">${esc(s.principal)}</span>
+                <span class="sug-secundari">${esc(s.secundari)}</span>
+            </li>`).join('');
+        llistaSug.hidden = false;
+        inputAdreca.setAttribute('aria-expanded', 'true');
+        if (actiu >= 0) inputAdreca.setAttribute('aria-activedescendant', `sug-${actiu}`);
+        else inputAdreca.removeAttribute('aria-activedescendant');
+    }
+
+    function tancarSuggeriments() {
+        llistaSug.hidden = true;
+        llistaSug.innerHTML = '';
+        inputAdreca.setAttribute('aria-expanded', 'false');
+        inputAdreca.removeAttribute('aria-activedescendant');
+    }
+
+    function triarSuggeriment(i) {
+        const s = suggeriments[i];
+        if (!s) return;
+        seleccio = s;
+        inputAdreca.value = s.etiqueta;
+        tancarSuggeriments();
+    }
+
+    inputAdreca.addEventListener('keydown', e => {
+        if (llistaSug.hidden) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); actiu = (actiu + 1) % suggeriments.length; pintarSuggeriments(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); actiu = (actiu - 1 + suggeriments.length) % suggeriments.length; pintarSuggeriments(); }
+        else if (e.key === 'Enter' && actiu >= 0) { e.preventDefault(); triarSuggeriment(actiu); }
+        else if (e.key === 'Escape') { tancarSuggeriments(); }
+    });
+    llistaSug.addEventListener('mousedown', e => {
+        const li = e.target.closest('li[data-i]');
+        if (li) { e.preventDefault(); triarSuggeriment(Number(li.dataset.i)); }
+    });
+    inputAdreca.addEventListener('blur', () => setTimeout(tancarSuggeriments, 150));
+
+    // Si no s'ha triat cap suggeriment, geocodifiquem el text escrit.
+    async function geocodificarText(text) {
+        let intents = 0, errorsXarxa = 0;
+        try {
+            intents++;
+            const r = await fetchAmbTemps(`https://api.openrouteservice.org/geocode/search?${paramsGeocoder()}&size=5&text=${encodeURIComponent(text)}`, {}, 10000);
+            if (r.ok) {
+                const d = await r.json();
+                const f = (d.features || []).find(x => ['address', 'street', 'venue'].includes(x?.properties?.layer)) || d.features?.[0];
+                if (f) return featureAOrigen(f);
+            }
+        } catch (e) { if (esErrorDeXarxa(e)) errorsXarxa++; console.warn('Geocodificació ORS no disponible', e); }
+
+        const senseNumero = text.replace(/\d+/g, '').replace(/\s*,\s*,/g, ',').trim();
+        for (const q of [text, senseNumero]) {
+            try {
+                intents++;
+                const r = await fetchAmbTemps(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}` +
+                    `&format=json&addressdetails=1&limit=1&countrycodes=es` +
+                    `&viewbox=${CAT.minLon},${CAT.maxLat},${CAT.maxLon},${CAT.minLat}&bounded=1`);
+                if (r.ok) {
+                    const d = await r.json();
+                    if (Array.isArray(d) && d.length) {
+                        const a = d[0].address || {};
+                        const carrer = [a.road || a.pedestrian || a.square, a.house_number].filter(Boolean).join(' ');
+                        const mun = corregirNom(a.city || a.town || a.village || a.municipality || '');
+                        return {
+                            etiqueta: [carrer, mun].filter(Boolean).join(', ') || corregirNom(d[0].display_name.split(',').slice(0, 2).join(',')),
+                            municipi: mun,
+                            municipiAdmin: corregirNom(a.municipality || ''),
+                            lat: parseFloat(d[0].lat), lon: parseFloat(d[0].lon),
+                            aproximada: q !== text || !a.road
+                        };
+                    }
+                }
+            } catch (e) { if (esErrorDeXarxa(e)) errorsXarxa++; console.warn(`Nominatim "${q}"`, e); }
+        }
+        if (errorsXarxa === intents) throw new ErrorXarxa('Geocodificació sense connexió');
+        return null;
+    }
+
+    // ------------------------------------------------------------------
+    // CÀLCUL PRINCIPAL
+    // ------------------------------------------------------------------
+    document.getElementById('formulari').addEventListener('submit', async e => {
+        e.preventDefault();
+        const text = inputAdreca.value.trim();
+        const horaEntrada = document.getElementById('hora').value || '08:00';
+        const horaSortida = document.getElementById('hora-sortida').value || '15:00';
+        evitarPeatges = document.getElementById('evitar-peatges').checked;
+        const boto = document.getElementById('calcular');
+        const resultatsDiv = document.getElementById('resultats');
+
+        if (!text) { inputAdreca.focus(); return; }
+        tancarSuggeriments();
+        boto.disabled = true;
+        resultatsDiv.innerHTML = `<div class="estat">Buscant l'adreça...</div>`;
+
+        try {
+            const origen = seleccio || await geocodificarText(text);
+            if (!origen) throw new Error(`No s'ha trobat "${text}". Escriu el carrer, el número i el municipi, o tria una de les adreces suggerides.`);
+
+            const arribada = properaArribada(horaEntrada);
+            const sortida = properaSortida(arribada, horaSortida);
+            resultatsDiv.innerHTML = `<div class="estat">Calculant recorreguts i línies de transport...</div>`;
+
+            const [resCotxe, rutaBici, rutaPeu, tpAnada, tpTornada] = await Promise.all([
+                calcularCotxe(origen.lat, origen.lon, arribada, sortida),
+                calcularRutaORS(origen.lat, origen.lon, 'cycling-regular', 'recommended'),
+                calcularRutaORS(origen.lat, origen.lon, 'foot-walking', 'recommended'),
+                ...(() => { const pistes = crearPistesEstacions(); return [
+                    calcularTransportPublic(origen.lat, origen.lon, arribada, 'anada', pistes),
+                    calcularTransportPublic(origen.lat, origen.lon, sortida, 'tornada', pistes)]; })()
+            ]);
+
+            const rutaCotxe = resCotxe.anada;
+            if ([rutaCotxe, rutaBici, rutaPeu].every(r => r.errorXarxa) && tpAnada.errorXarxa && tpTornada.errorXarxa) throw new ErrorXarxa('Cap servei respon');
+
+            // Transport públic: anada i tornada són itineraris diferents. El CO2
+            // per trajecte és la mitjana dels dos.
+            const sentits = [['Anada', tpAnada], ['Tornada', tpTornada]];
+            const valids = sentits.filter(([, r]) => r.ok);
+            const tpCo2 = valids.length ? valids.reduce((t, [, r]) => t + r.co2g, 0) / valids.length : NaN;
+            const tpTrams = sentits.map(([etiqueta, r]) => r.ok
+                ? { etiqueta, segments: r.segments, horari: r.horari }
+                : { etiqueta, segments: { text: r.text || 'No disponible' }, horari: '' });
+
+            const cotxe = resumVehicle(rutaCotxe, 'cotxe');
+            const moto = resumVehicle(rutaCotxe, 'moto');
+            const tornadaCotxe = resCotxe.tornada;
+            const tempsTornadaCotxe = f => tornadaCotxe ? textTemps(tornadaCotxe.duradaS * f) : '';
+            const notaCotxe = [
+                rutaCotxe.font === 'TomTom'
+                    ? `Amb el trànsit habitual per arribar a les ${formatHora(arribada.getTime())}` +
+                      (rutaCotxe.retardTransitS >= 60 ? `, inclou uns ${Math.round(rutaCotxe.retardTransitS / 60)} min de retencions` : '')
+                    : '',
+                evitarPeatges ? 'Ruta sense peatges' : ''
+            ].filter(Boolean).join('. ');
+            const bici = resumSimple(rutaBici);
+            const peu = resumSimple(rutaPeu);
+
+
+            const municipiNorm = normalitzarMunicipi(origen.municipi);
+            const tarifa = tarifaTransport(origen.municipi, origen.municipiAdmin);
+            const preuAbonament = tarifa ? tarifa.preu : NaN;
+            const textTarifa = tarifa
+                ? `T-usual de ${tarifa.zones} ${tarifa.zones === 1 ? 'zona' : 'zones'}` +
+                  (tarifa.metropolitana ? ` (tarifa metropolitana; ${normalitzarMunicipi(tarifa.municipiTarifa) === normalitzarMunicipi(origen.municipi) ? origen.municipi : `${origen.municipi}, ${tarifa.municipiTarifa},`} és zona ${tarifa.zona})` : '') +
+                  (tarifa.aproximada ? ' (aproximat: a la corona 7 depèn dels sectors que travessis)' : '')
+                : '';
+            const mensual = x => Math.round(x * TRAJECTES_MES * 100) / 100;
+
+            const co2Cotxe = cotxe.co2g || 0;
+            const baseKaros = { km: cotxe.distancia || 0, costCotxe: cotxe.cost || 0, co2Cotxe, litresCotxe: cotxe.litres || 0 };
+            const opcions = [
+                { id: 'tp', nom: 'Transport públic', eco: 'Baixes emissions', trams: tpTrams, minuts: tpAnada.ok ? tpAnada.tempsMin : NaN,
+                  temps: tpAnada.ok ? formatDuradaMinuts(tpAnada.tempsMin) : 'No disponible',
+                  tempsTornada: tpTornada.ok ? formatDuradaMinuts(tpTornada.tempsMin) : '',
+                  km: tpAnada.distanciaKm ?? tpTornada.distanciaKm, trajecte: preuAbonament / TRAJECTES_MES, mes: preuAbonament, tarifa: textTarifa, co2g: tpCo2 },
+                { id: 'cotxe', nom: 'Cotxe', minuts: rutaCotxe.ok ? Math.round(rutaCotxe.duradaS / 60) : NaN, ruta: cotxe.ruta, nota: notaCotxe, detall: cotxe.detall, acces: cotxe.acces, font: cotxe.font, temps: cotxe.temps, tempsTornada: tempsTornadaCotxe(1), km: cotxe.distancia, trajecte: cotxe.cost, mes: mensual(cotxe.cost), co2g: co2Cotxe, litres: cotxe.litres },
+                { id: 'moto', nom: 'Motocicleta', ruta: moto.ruta, temps: moto.temps, tempsTornada: tempsTornadaCotxe(0.85), km: moto.distancia, trajecte: moto.cost, mes: mensual(moto.cost), co2g: moto.co2g || 0, litres: moto.litres },
+                { id: 'karos', nom: 'Cotxe compartit (Karos)', minuts: rutaCotxe.ok ? Math.round(rutaCotxe.duradaS / 60) : NaN, eco: 'Emissions compartides', enllac: ENLLAC_KAROS, textEnllac: 'Apunta’t a Karos', ruta: cotxe.ruta, temps: cotxe.temps, tempsTornada: tempsTornadaCotxe(1), km: cotxe.distancia, ...calcularKaros(baseKaros, COMBUSTIBLE.ocupantsKaros, true) },
+                { id: 'bici', nom: 'Bicicleta o patinet', eco: 'Zero emissions', ruta: bici.ruta, temps: bici.temps, km: bici.distancia, trajecte: 0, mes: 0, co2g: 0 },
+                { id: 'peu', nom: 'A peu', eco: 'Zero emissions', ruta: peu.ruta, temps: peu.temps, km: peu.distancia, trajecte: 0, mes: 0, co2g: 0 }
+            ];
+
+            let html = '';
+            if (origen.aproximada) html += `<div class="avis">No s'ha trobat l'adreça exacta. S'ha fet servir la ubicació aproximada de "${esc(origen.etiqueta)}".</div>`;
+            if (!tarifa) html += `<div class="avis">No s'ha pogut saber la zona tarifària de ${esc(origen.municipi || 'aquesta adreça')}, així que no es mostra el cost del transport públic. Pots consultar-la al comptador de zones de l'ATM.</div>`;
+            html += pintarResum(opcions);
+            html += opcions.map(o => pintarOpcio(o, co2Cotxe)).join('');
+            html += `<div class="accio-informe"><button type="button" class="calcular" id="boto-informe">Descarregar informe (PDF)</button><span>Un document A4 amb la comparativa, els gràfics i els teus trajectes.</span></div>`;
+            resultatsDiv.innerHTML = html;
+            darrerResultat = { adreca: origen.etiqueta || text, horaEntrada, horaSortida, opcions, co2Cotxe, litresCotxe: cotxe.litres || 0, baseKaros };
+        } catch (error) {
+            console.error(error);
+            const missatge = esErrorDeXarxa(error)
+                ? "No es pot connectar amb els serveis de mapes i transport. Si obres l'eina dins d'una vista prèvia (Claude, Gemini, un editor...), descarrega el fitxer i obre'l directament al navegador o publica'l en un servidor web."
+                : error.message;
+            resultatsDiv.innerHTML = `<div class="error"><strong>No s'ha pogut calcular.</strong> ${esc(missatge)}</div>`;
+        } finally {
+            boto.disabled = false;
+        }
+    });
+
+    // ------------------------------------------------------------------
+    // PRESENTACIÓ
+    // ------------------------------------------------------------------
+    const ICONES = {
+        tp: '<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 10h16M8 17v3M16 17v3"/><path d="M8 13.5h.01M16 13.5h.01"/>',
+        cotxe: '<path d="M5 16H3v-3l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5v3h-2"/><path d="M3 13h18"/><circle cx="7.5" cy="16.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/><path d="M9.5 16.5h5"/>',
+        moto: '<circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><path d="M5 16l4-6h5l3 6"/><path d="M14 10l2-4h3"/>',
+        karos: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+        bici: '<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+        peu: '<circle cx="13" cy="4" r="2"/><path d="M9 20l2-6 3 3v3M8 12l3-4 3 3 3 1M11 8l-1 5"/>'
+    };
+
+    const COLORS_METRO = { L1: '#e2231a', L2: '#9b3e98', L3: '#3ba638', L4: '#f7b500', L5: '#0078bf', L9: '#f18a00', L9N: '#f18a00', L9S: '#f18a00', L10: '#00a6d6', L10N: '#00a6d6', L10S: '#00a6d6', L11: '#89b94c', FM: '#004c38' };
+
+    function colorLinia(seg) {
+        if (seg.tipus === 'METRO') return COLORS_METRO[seg.nom.toUpperCase()] || '#5b6b79';
+        if (seg.tipus === 'RODALIES') return '#e0560f';
+        if (seg.tipus === 'FGC') return '#6e8f00';
+        if (seg.tipus === 'TRAM') return '#008e78';
+        if (seg.tipus === 'BUS') return '#b3261e';
+        return '#5b6b79';
+    }
+    const NOM_TIPUS = { METRO: 'Metro', RODALIES: 'Rodalies', FGC: 'FGC', TRAM: 'Tram', BUS: 'Bus', TREN: 'Tren', TP: '' };
+
+    function pintarRuta(ruta) {
+        if (!ruta || !ruta.length) return '<span class="text">Vies urbanes</span>';
+        if (ruta.text) return `<span class="text">${esc(ruta.text)}</span>`;
+        return ruta.map((seg, i) => {
+            const fletxa = i > 0 && seg.tipus !== 'PEATGE' ? '<span class="fletxa" aria-hidden="true">›</span>' : '';
+            if (seg.tipus === 'VIA') return fletxa + `<span class="placa ${seg.rapida ? 'placa-via-rapida' : 'placa-via'}">${esc(seg.etiqueta)}</span>`;
+            if (seg.tipus === 'PEATGE') return `<span class="placa placa-peatge">Peatge ${esc(seg.etiqueta)}</span>`;
+            const color = colorLinia(seg);
+            const textColor = color === '#f7b500' ? '#1a1a1a' : '#fff';
+            const tipus = NOM_TIPUS[seg.tipus] ?? '';
+            return fletxa + `<span class="placa placa-tp" style="background:${color};color:${textColor}">${tipus ? `<small>${esc(tipus)}</small>` : ''}${esc(seg.nom)}</span>`;
+        }).join('');
+    }
+
+    const coma = (n, dec) => n.toFixed(dec).replace('.', ',');
+
+    // Per sota d'una tona, quilos; a partir d'una tona, tones.
+    function formatCO2(g) {
+        if (!Number.isFinite(g)) return '—';
+        if (g < 1000) return `${Math.round(g)} g`;
+        const kg = g / 1000;
+        if (kg < 1000) return `${Math.round(kg)} kg`;
+        return `${coma(kg / 1000, 1)} tones`;
+    }
+
+    function formatLitres(l) {
+        return `${coma(l, l < 10 ? 1 : 0)} ${l === 1 ? 'litre' : 'litres'}`;
+    }
+
+    // Resum: punt de partida (venir en cotxe sense compartir-lo) i alternatives realistes,
+    // ordenades per facilitat (temps de més) i no per estalvi. Retorna textos
+    // plans perquè l'app i el PDF diguin exactament el mateix.
+    function textosResum(opcions) {
+        const o = Object.fromEntries(opcions.map(x => [x.id, x]));
+        const cotxe = o.cotxe;
+        if (!cotxe || !(cotxe.co2g > 0)) return null;
+        const any = x => Number.isFinite(x.mes) ? x.mes * MESOS_LABORABLES : NaN;
+        const euros = v => `${Math.round(Math.abs(v)).toLocaleString('ca-ES')} €`;
+        const minuts = m => `${m} ${m === 1 ? 'minut' : 'minuts'}`;
+        const costCotxe = any(cotxe);
+        const titol = `Si vens en cotxe sense compartir-lo, emets ${formatCO2(cotxe.co2g * TRAJECTES_ANY)} de CO₂` +
+            (Number.isFinite(costCotxe) ? ` i gastes ${euros(costCotxe)} l'any.` : " l'any.");
+
+        const alternativa = (x, etiqueta) => {
+            if (!x || !Number.isFinite(x.co2g) || x.co2g >= cotxe.co2g) return null;
+            const pct = Math.round((1 - x.co2g / cotxe.co2g) * 100);
+            const avantatges = [pct === 50 ? "la meitat d'emissions" : `un ${pct}% menys d'emissions`];
+            const inconvenients = [];
+            const dEur = costCotxe - any(x);
+            if (Number.isFinite(dEur) && Math.abs(dEur) >= 5) {
+                (dEur > 0 ? avantatges : inconvenients).push(dEur > 0 ? `estalvies ${euros(dEur)} l'any` : `et costa ${euros(dEur)} més l'any`);
+            }
+            const dMin = Number.isFinite(x.minuts) && Number.isFinite(cotxe.minuts) ? x.minuts - cotxe.minuts : NaN;
+            let final = '';
+            if (Number.isFinite(dMin)) {
+                if (dMin <= -3) avantatges.push(`arribes ${minuts(-dMin)} abans`);
+                else if (dMin >= 3) inconvenients.push(`tardes ${minuts(dMin)} més per trajecte`);
+                else final = ', amb el mateix temps';
+            }
+            const junta = l => l.length > 1 ? `${l.slice(0, -1).join(', ')} i ${l[l.length - 1]}` : l[0];
+            const text = junta(avantatges) + (inconvenients.length ? `, però ${junta(inconvenients)}` : final) + '.';
+            return { etiqueta, text, extra: Number.isFinite(dMin) ? dMin : 999, pct };
+        };
+
+        const k = o.karos;
+        const altres = k ? (k.ocupants - 1 === 1 ? 'una altra persona' : `${k.ocupants - 1} persones més`) : '';
+        const items = [
+            k && alternativa(k, `Compartint cotxe amb ${altres}`),
+            alternativa(o.tp, 'En transport públic')
+        ].filter(Boolean).sort((a, b) => (a.extra - b.extra) || (b.pct - a.pct));
+        return items.length ? { titol, items } : null;
+    }
+
+    function pintarResum(opcions) {
+        const r = textosResum(opcions);
+        if (!r) return '<div id="resum"></div>';
+        return `
+            <div class="resum-co2" id="resum">
+                <p class="resum-xifra">${esc(r.titol)}</p>
+                <ul class="resum-llista">${r.items.map(i => `<li><strong>${esc(i.etiqueta)}:</strong> ${esc(i.text)}</li>`).join('')}</ul>
+            </div>`;
+    }
+
+    function pintarCO2(o, co2Cotxe) {
+        if (!Number.isFinite(o.co2g)) return '';
+        const ample = co2Cotxe > 0 ? Math.min(100, Math.max(o.co2g > 0 ? 2 : 0, o.co2g / co2Cotxe * 100)) : 0;
+        const parts = [];
+        if (o.litres > 0) parts.push(`<strong>${formatLitres(o.litres * 2)}</strong> de combustible al dia${o.id === 'karos' ? ', la teva part,' : ''} (anada i tornada)`);
+        parts.push(`<strong>${o.co2g > 0 ? formatCO2(o.co2g * TRAJECTES_ANY) : '0 kg'} de CO₂</strong> a l'any`);
+        let text = parts.join(', ');
+        if (o.id !== 'cotxe' && co2Cotxe > 0) {
+            const estalvi = (co2Cotxe - o.co2g) * TRAJECTES_ANY;
+            if (estalvi > 0) text += ` <span class="co2-estalvi">${formatCO2(estalvi)} menys que en cotxe</span>`;
+        }
+        return `
+            <div class="co2">
+                <div class="co2-barra" aria-hidden="true"><span style="width:${ample}%"></span></div>
+                <p class="co2-text">${text}</p>
+            </div>`;
+    }
+
+    const MANIOBRES = {
+        DEPART: 'Sortida', ARRIVE: 'Arribada', ARRIVE_LEFT: 'Arribada', ARRIVE_RIGHT: 'Arribada',
+        STRAIGHT: 'Recte', KEEP_LEFT: "Mantén-te a l'esquerra", KEEP_RIGHT: 'Mantén-te a la dreta',
+        BEAR_LEFT: "Lleugerament a l'esquerra", BEAR_RIGHT: 'Lleugerament a la dreta',
+        TURN_LEFT: "Gira a l'esquerra", TURN_RIGHT: 'Gira a la dreta',
+        SHARP_LEFT: "Gira tancat a l'esquerra", SHARP_RIGHT: 'Gira tancat a la dreta',
+        MAKE_UTURN: 'Canvi de sentit', TRY_MAKE_UTURN: 'Canvi de sentit',
+        ENTER_MOTORWAY: "Entra a l'autopista", ENTER_FREEWAY: "Entra a l'autovia", ENTER_HIGHWAY: 'Entra a la via ràpida',
+        TAKE_EXIT: 'Agafa la sortida', MOTORWAY_EXIT_LEFT: "Sortida per l'esquerra", MOTORWAY_EXIT_RIGHT: 'Sortida per la dreta',
+        TAKE_FERRY: 'Ferri', SWITCH_PARALLEL_ROAD: 'Canvia a la via lateral', SWITCH_MAIN_ROAD: 'Canvia a la via principal',
+        ROUNDABOUT_CROSS: 'Rotonda, recte', ROUNDABOUT_RIGHT: 'Rotonda, a la dreta', ROUNDABOUT_LEFT: "Rotonda, a l'esquerra",
+        ROUNDABOUT_BACK: 'Rotonda, mitja volta', WAYPOINT_REACHED: 'Punt de pas', FOLLOW: 'Continua'
+    };
+
+    // Recorregut pas a pas, desplegable. Permet comprovar per on va realment la ruta.
+    function pintarDetall(o) {
+        if (!o.detall || !o.detall.length) return '';
+        const passos = o.detall.filter((p, i, a) => !(/^ARRIVE/.test(p.maniobra) && i > 0 && /^ARRIVE/.test(a[i - 1].maniobra)));
+        const files = passos.map(p => {
+            const arribada = /^ARRIVE/.test(p.maniobra);
+            const nom = arribada ? (o.acces ? `Arribada a ${o.acces.nom}` : "Arribada a l'hospital") : ([p.numeros.join('/'), p.carrer].filter(Boolean).join(' ') || 'Via sense nom');
+            const extra = [MANIOBRES[p.maniobra] || '', p.retol ? `rètol: ${p.retol}` : ''].filter(Boolean).join(', ');
+            return `<li><span class="detall-km">${p.km.toFixed(1).replace('.', ',')} km</span><span><strong>${esc(nom)}</strong>${extra ? `<small>${esc(extra)}</small>` : ''}</span></li>`;
+        }).join('');
+        return `<details class="detall"><summary>Veure el recorregut pas a pas (${esc(o.font === 'TomTom' ? 'TomTom' : 'OpenRouteService')})</summary><ol>${files}</ol></details>`;
+    }
+
+    function pintarOpcio(o, co2Cotxe) {
+        const km = Number.isFinite(o.km) && o.km > 0 ? `${o.km.toFixed(1).replace('.', ',')} km` : '—';
+        const eur = v => Number.isFinite(v) ? `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', ',')} €` : '—';
+        // A l'any, sense cèntims i amb punt de milers: "1.234 €".
+        const eurAny = v => Number.isFinite(v) ? `${v < 0 ? '−' : ''}${Math.round(Math.abs(v)).toLocaleString('ca-ES')} €` : '—';
+        return `
+            <article class="opcio" data-id="${o.id}">
+                <div class="opcio-mode">
+                    <span class="icona" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONES[o.id]}</svg></span>
+                    <div><h2>${esc(o.nom)}</h2>${o.eco ? `<span class="eco">${esc(o.eco)}</span>` : ''}${o.id === 'karos' ? `
+                        <label class="ocupants">Persones al cotxe
+                            <select id="ocupants-karos">${[2, 3, 4].map(n => `<option value="${n}"${n === o.ocupants ? ' selected' : ''}>${n}</option>`).join('')}</select>
+                        </label>
+                        <label class="ocupants">
+                            <select id="rol-karos" aria-label="Rol al cotxe compartit">
+                                <option value="1"${o.condueix ? ' selected' : ''}>Condueixo</option>
+                                <option value="0"${o.condueix ? '' : ' selected'}>No condueixo</option>
+                            </select>
+                        </label>` : ''}</div>
+                </div>
+                ${o.trams
+                    ? `<div class="trajectes">${o.tarifa ? `<span class="horari tarifa">${esc(o.tarifa)}</span>` : ''}${o.trams.map(t => `
+                        <div class="trajecte-sentit"><span class="sentit">${esc(t.etiqueta)}</span>${pintarRuta(t.segments)}${t.horari ? `<span class="horari">${esc(t.horari)}</span>` : ''}</div>`).join('')}</div>`
+                    : `<div class="ruta">${pintarRuta(o.ruta)}${o.nota ? `<span class="horari">${esc(o.nota)}</span>` : ''}${o.enllac ? `<a class="enllac-extern" href="${esc(o.enllac)}" target="_blank" rel="noopener">${esc(o.textEnllac || 'Més informació')} ›</a>` : ''}</div>`}
+                <dl class="xifres">
+                    <div><dt>Temps</dt><dd>${esc(o.temps)}${o.tempsTornada ? `<small>tornada ${esc(o.tempsTornada)}</small>` : ''}</dd></div>
+                    <div><dt>Distància</dt><dd>${km}</dd></div>
+                    <div><dt>Al mes</dt><dd${o.mes < 0 ? ' class="guany"' : ''}>${eur(o.mes)}</dd></div>
+                    <div><dt>A l'any</dt><dd${o.mes < 0 ? ' class="guany"' : ''}>${eurAny(o.mes * MESOS_LABORABLES)}</dd></div>
+                </dl>
+                ${pintarCO2(o, co2Cotxe)}
+            </article>`;
+    }
+
+    // ------------------------------------------------------------------
+    // RUTES PER CARRETERA (ORS)
+    // ------------------------------------------------------------------
+    // ORS calcula el temps amb els límits de velocitat, sense semàfors ni
+    // trànsit. Per això a vegades prefereix creuar la ciutat (General Mitre,
+    // Diagonal...) en lloc de seguir la ronda. En cotxe demanem alternatives i
+    // les comparem amb un temps corregit que penalitza els trams urbans.
+    const PENALITZACIO_URBANA = 1.4; // un tram urbà costa un 40% més del que diu ORS
+
+    function featureARuta(f) {
+        let acumulat = 0;
+        const passos = (f.properties.segments || []).flatMap(s => s.steps || []);
+        return {
+            detall: passos.map(st => { const d = { km: acumulat / 1000, maniobra: '', carrer: st.name && st.name !== '-' ? st.name : '', numeros: [], retol: '' }; acumulat += Number(st.distance) || 0; return d; }),
+            ok: true,
+            distanciaKm: f.properties.summary.distance / 1000,
+            duradaS: f.properties.summary.duration,
+            steps: (f.properties.segments || []).flatMap(s => s.steps || []),
+            extras: f.properties.extras || {},
+            geometria: f.geometry?.coordinates || []
+        };
+    }
+
+    function tempsCorregit(ruta) {
+        const rangsRapida = rangs(ruta.extras, 'waycategory', v => (v & 1) === 1);
+        return ruta.steps.reduce((t, st) => {
+            const d = Number(st.duration) || 0;
+            const rapida = fraccioDins(st.way_points, rangsRapida) >= 0.5;
+            return t + d * (rapida ? 1 : PENALITZACIO_URBANA);
+        }, 0);
+    }
+
+    async function peticioORS(perfil, cos) {
+        const resp = await fetchAmbTemps(`https://api.openrouteservice.org/v2/directions/${perfil}/geojson`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': CLAU_ORS },
+            body: JSON.stringify(cos)
+        });
+        if (!resp.ok) throw new Error(`ORS ${perfil}: HTTP ${resp.status}`);
+        const dades = await resp.json();
+        if (!dades?.features?.length) throw new Error(`ORS ${perfil}: sense ruta`);
+        return dades.features;
+    }
+
+    function isoLocal(d) {
+        const p = n => String(n).padStart(2, '0');
+        const off = -d.getTimezoneOffset(), a = Math.abs(off);
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:00` +
+            `${off >= 0 ? '+' : '-'}${p(Math.floor(a / 60))}:${p(a % 60)}`;
+    }
+
+    // Ruta en cotxe amb TomTom. Retorna la mateixa estructura que ORS perquè la
+    // resta de l'app (vies principals, peatges, costos) funcioni igual.
+    async function calcularRutaTomTom(oLat, oLon, dLat, dLon, moment) {
+        const params = new URLSearchParams({
+            key: CLAU_TOMTOM, travelMode: 'car', routeType: 'fastest', traffic: 'true',
+            instructionsType: 'text', routeRepresentation: 'polyline', computeTravelTimeFor: 'all'
+        });
+        params.append('sectionType', 'motorway');
+        params.append('sectionType', 'tollRoad');
+        if (evitarPeatges) params.set('avoid', 'tollRoads');
+        if (moment.arriveAt) params.set('arriveAt', isoLocal(moment.arriveAt));
+        if (moment.departAt) params.set('departAt', isoLocal(moment.departAt));
+        try {
+            const resp = await fetchAmbTemps(`https://api.tomtom.com/routing/1/calculateRoute/${oLat},${oLon}:${dLat},${dLon}/json?${params}`);
+            if (!resp.ok) throw new Error(`TomTom HTTP ${resp.status}`);
+            const d = await resp.json();
+            const ruta = d?.routes?.[0];
+            if (!ruta) throw new Error('TomTom: sense ruta');
+
+            const punts = (ruta.legs || []).flatMap(l => l.points || []);
+            const ins = ruta.guidance?.instructions || [];
+            // Cada instrucció marca on comença un tram; el tram acaba a la següent.
+            const steps = ins.slice(0, -1).map((it, i) => {
+                const seg = ins[i + 1];
+                return {
+                    name: nomTramTomTom(it),
+                    distance: (seg.routeOffsetInMeters || 0) - (it.routeOffsetInMeters || 0),
+                    duration: (seg.travelTimeInSeconds || 0) - (it.travelTimeInSeconds || 0),
+                    way_points: [it.pointIndex ?? 0, seg.pointIndex ?? 0]
+                };
+            });
+            // Diagnòstic: a la consola, escriu copy(diagnosticCotxe) i enganxa'l al xat.
+            window.diagnosticCotxe = window.diagnosticCotxe || {};
+            window.diagnosticCotxe[moment.arriveAt ? 'anada' : 'tornada'] = {
+                km: Math.round(ruta.summary.lengthInMeters / 100) / 10,
+                min: Math.round(ruta.summary.travelTimeInSeconds / 60),
+                retencions_min: Math.round((ruta.summary.trafficDelayInSeconds || 0) / 60),
+                instruccions: ins.map(it => ({
+                    km: Math.round((it.routeOffsetInMeters || 0) / 100) / 10,
+                    maniobra: it.maneuver, carrer: it.street || '', numeros: (it.roadNumbers || []).join('/'),
+                    retol: it.signpostText || '', missatge: it.message || ''
+                }))
+            };
+            console.log(`Cotxe TomTom (${moment.arriveAt ? 'anada' : 'tornada'}): ${window.diagnosticCotxe[moment.arriveAt ? 'anada' : 'tornada'].min} min`);
+            console.table(window.diagnosticCotxe[moment.arriveAt ? 'anada' : 'tornada'].instruccions);
+
+            const seccions = ruta.sections || [];
+            const rangsDe = tipus => seccions.filter(x => x.sectionType === tipus).map(x => [x.startPointIndex, x.endPointIndex, 1]);
+            return {
+                ok: true, font: 'TomTom',
+                detall: ins.map(it => ({
+                    km: (it.routeOffsetInMeters || 0) / 1000,
+                    maniobra: it.maneuver || '',
+                    carrer: it.street || '',
+                    numeros: it.roadNumbers || [],
+                    retol: it.signpostText || ''
+                })),
+                distanciaKm: ruta.summary.lengthInMeters / 1000,
+                duradaS: ruta.summary.travelTimeInSeconds,
+                retardTransitS: ruta.summary.trafficDelayInSeconds || 0,
+                steps,
+                extras: { waycategory: { values: rangsDe('MOTORWAY') }, tollways: { values: rangsDe('TOLL_ROAD') } },
+                geometria: punts.map(pt => [pt.longitude, pt.latitude])
+            };
+        } catch (e) {
+            console.warn('TomTom no disponible', e);
+            return { ok: false, errorXarxa: esErrorDeXarxa(e) };
+        }
+    }
+
+    // Nom del tram que comença en una instrucció de TomTom. Els números de
+    // carretera d'una instrucció poden ser els del rètol ("cap a C-32/C-31"),
+    // no els de la via per on circules. Per això:
+    // - si hi ha nom de carrer, mana el carrer (i el número només si és un de sol);
+    // - si hi ha diversos números i cap carrer, és un rètol: no hi posem nom;
+    // - les maniobres de sortida o bifurcació mai donen nom al tram.
+    function nomTramTomTom(it) {
+        const numeros = it.roadNumbers || [];
+        const carrer = (it.street || '').trim();
+        const maniobra = String(it.maneuver || '');
+        // Les sortides d'autovia comencen una rampa: TomTom hi posa el nom del carrer
+        // on acaba (p. ex. "Camí de Cal Pau Redó"), que no és la via per on circules.
+        if (/EXIT/.test(maniobra)) return '';
+        // Sense nom de carrer, és un rètol si hi ha diversos números ("C-32/C-31") o si
+        // és una bifurcació. Entrar a una autovia amb un sol número (A-2) sí que la nomena.
+        const esRetol = !carrer && (numeros.length > 1 || /FORK|KEEP|SWITCH/.test(maniobra));
+        if (esRetol) return '';
+        if (carrer) return numeros.length === 1 ? `${numeros[0]} ${carrer}` : carrer;
+        return numeros.length === 1 ? numeros[0] : '';
+    }
+
+    // Cotxe: TomTom (amb trànsit, anada i tornada) si hi ha clau; si no, ORS.
+    async function calcularCotxe(lat, lon, arribada, sortida) {
+        if (CLAU_TOMTOM) {
+            const anades = await Promise.all(ACCESSOS_COTXE.map(a =>
+                calcularRutaTomTom(lat, lon, a.lat, a.lon, { arriveAt: arribada }).then(r => ({ ...r, acces: a }))));
+            console.log('Cotxe TomTom: ruta cap a cada accés (es tria la més ràpida)');
+            console.table(anades.map(r => ({ acces: r.acces.nom, km: r.ok ? Math.round(r.distanciaKm * 10) / 10 : '-', min: r.ok ? Math.round(r.duradaS / 60) : 'error' })));
+            const valides = anades.filter(r => r.ok);
+            if (valides.length) {
+                const anada = valides.reduce((m, r) => r.duradaS < m.duradaS ? r : m);
+                const tornada = await calcularRutaTomTom(anada.acces.lat, anada.acces.lon, lat, lon, { departAt: sortida });
+                return { anada, tornada: tornada.ok ? tornada : null };
+            }
+        }
+        return { anada: await calcularRutaORS(lat, lon, 'driving-car', 'fastest', ACCES_COTXE), tornada: null };
+    }
+
+    async function calcularRutaORS(lat, lon, perfil, preferencia, desti = { lat: DESTI_LAT, lon: DESTI_LON }) {
+        const cos = {
+            coordinates: [[lon, lat], [desti.lon, desti.lat]],
+            preference: preferencia,
+            instructions: true,
+            // waycategory (bit 1 = autopista/autovia), waytype (1 = carretera
+            // principal) i tollways (1 = peatge), tram a tram.
+            extra_info: ['waycategory', 'waytype', 'tollways'],
+            ...(evitarPeatges && perfil === 'driving-car' ? { options: { avoid_features: ['tollways'] } } : {})
+        };
+        const ambAlternatives = perfil === 'driving-car';
+        try {
+            let features;
+            try {
+                features = await peticioORS(perfil, ambAlternatives
+                    ? { ...cos, alternative_routes: { target_count: 3, weight_factor: 1.6, share_factor: 0.6 } }
+                    : cos);
+            } catch (e) {
+                // Les alternatives fallen en rutes llargues (més de 100 km): reintentem sense.
+                if (!ambAlternatives || esErrorDeXarxa(e)) throw e;
+                features = await peticioORS(perfil, cos);
+            }
+            const rutes = features.map(featureARuta);
+            if (!ambAlternatives || rutes.length === 1) return rutes[0];
+
+            rutes.forEach(r => { r.tempsCorregitS = tempsCorregit(r); });
+            console.log('Cotxe: alternatives d\'ORS (es tria la de menys temps corregit)');
+            console.table(rutes.map(r => ({
+                vies: viesPrincipals(r.steps, r.extras, r.distanciaKm * 1000).segments.map(s => s.etiqueta).join(' > '),
+                km: Math.round(r.distanciaKm * 10) / 10,
+                min_ORS: Math.round(r.duradaS / 60),
+                min_corregit: Math.round(r.tempsCorregitS / 60)
+            })));
+            return rutes.reduce((millor, r) => r.tempsCorregitS < millor.tempsCorregitS ? r : millor);
+        } catch (e) {
+            console.error(`Error ORS (${perfil}):`, e);
+            return { ok: false, errorXarxa: esErrorDeXarxa(e) };
+        }
+    }
+
+    const textTemps = s => formatDuradaMinuts(Math.round(s / 60));
+
+    function resumSimple(r) {
+        if (!r.ok) return { temps: 'No disponible', distancia: 0, ruta: { text: 'No disponible' } };
+        const v = viesPrincipals(r.steps, r.extras, r.distanciaKm * 1000);
+        return { temps: textTemps(r.duradaS), distancia: Math.round(r.distanciaKm * 10) / 10, ruta: v.segments };
+    }
+
+    function resumVehicle(r, tipus) {
+        if (!r.ok) return { temps: 'No disponible', distancia: 0, cost: 0, ruta: { text: 'No disponible' } };
+        const factor = tipus === 'moto' ? 0.85 : 1.0;
+        const litresTrajecte = r.distanciaKm * COMBUSTIBLE[tipus] / 100;
+        const v = viesPrincipals(r.steps, r.extras, r.distanciaKm * 1000);
+        const peatges = evitarPeatges ? [] : peatgesAplicables(v.codis, r.geometria, r.extras);
+        const importP = peatges.reduce((t, p) => t + (tipus === 'moto' ? p.moto : p.cotxe), 0);
+        const segments = [...v.segments, ...peatges.map(p => ({
+            tipus: 'PEATGE',
+            etiqueta: !p.senseImport ? `${p.nom} ~${(tipus === 'moto' ? p.moto : p.cotxe).toFixed(2).replace('.', ',')} €` : p.nom
+        }))];
+        return {
+            temps: textTemps(r.duradaS * factor),
+            distancia: Math.round(r.distanciaKm * 10) / 10,
+            cost: Math.round((litresTrajecte * COMBUSTIBLE.preuLitre + importP) * 100) / 100,
+            litres: litresTrajecte,
+            co2g: litresTrajecte * COMBUSTIBLE.co2PerLitre,
+            ruta: segments,
+            detall: r.detall || [],
+            acces: r.acces || null,
+            font: r.font || 'ORS'
+        };
+    }
+
+    // Rangs d'índexs de la geometria on es compleix una condició.
+    function rangs(extras, clau, condicio) {
+        return (extras?.[clau]?.values || []).filter(v => condicio(v[2])).map(v => [v[0], v[1]]);
+    }
+
+    function fraccioDins(wp, llista) {
+        const [s, e] = wp || [0, 0];
+        if (!(e > s)) return 0;
+        let o = 0;
+        for (const [a, b] of llista) o += Math.max(0, Math.min(e, b) - Math.max(s, a));
+        return o / (e - s);
+    }
+
+    const NOMS_AMB_CODI = [
+        [/RONDA\s+DE\s+DALT/, 'B-20'],
+        [/RONDA\s+LITORAL/, 'B-10'],
+        [/AUTOVIA\s+DE\s+CASTELLDEFELS/, 'C-31'],
+        [/AUTOPISTA\s+PAU\s+CASALS/, 'C-32'],
+        [/T[ÚU]NELS?\s+DE\s+VALLVIDRERA/, 'C-16']
+    ];
+    const ETIQUETES_CODI = { 'B-20': 'Ronda de Dalt B-20', 'B-10': 'Ronda Litoral B-10' };
+    const VIES_URBANES_PRINCIPALS = [
+        [/GRAN\s+VIA/, 'Gran Via'], [/DIAGONAL/, 'Av. Diagonal'],
+        [/MERIDIANA/, 'Av. Meridiana'], [/PARAL[·.]?LEL/, 'Av. Paral·lel']
+    ];
+
+    function identificarVia(nom) {
+        const t = String(nom || '').toUpperCase().trim();
+        if (!t || t === '-') return null;
+        // Els enllaços i sortides d'autopista sovint només tenen el número de
+        // sortida com a nom ("9", "Sortida 9", "9-10"). No són una via: es
+        // compten com a tram d'autopista sense nom.
+        if (/^((SORTIDA|SALIDA|EXIT|ENLLA[ÇC])\s*)?\d{1,3}[A-Z]?(\s*[-–\/]\s*\d{1,3}[A-Z]?)?$/.test(t)) return null;
+        // Un nom conegut (Ronda de Dalt, Ronda Litoral...) mana sobre el número que
+        // l'acompanyi: TomTom etiqueta part de la Ronda de Dalt com a "C-32".
+        for (const [re, c] of NOMS_AMB_CODI) if (re.test(t)) return { clau: c, etiqueta: ETIQUETES_CODI[c] || c, codi: c, reconeguda: true };
+        const codi = t.match(/(?:^|[^A-Z0-9])(AP|A|B|C|N|BV)-(\d{1,4})(?![0-9A-Z])/);
+        if (codi) {
+            const c = `${codi[1]}-${codi[2]}`;
+            // Si el tram també té un nom conegut (p. ex. Gran Via, que és la C-31),
+            // els ajuntem perquè s'entengui: "Gran Via C-31".
+            const nomConegut = VIES_URBANES_PRINCIPALS.find(([re]) => re.test(t));
+            const etiqueta = ETIQUETES_CODI[c] || (nomConegut ? `${nomConegut[1]} ${c}` : c);
+            return { clau: c, etiqueta, codi: c, reconeguda: true };
+        }
+        for (const [re, et] of VIES_URBANES_PRINCIPALS) if (re.test(t)) return { clau: et, etiqueta: et, codi: null, reconeguda: true };
+        const net = String(nom).trim();
+        return { clau: net, etiqueta: net, codi: null, reconeguda: false };
+    }
+
+    // Vies principals de la ruta. La clau és que ara una via compta com a
+    // principal si ORS la classifica com a autopista/autovia o carretera
+    // principal, tingui el nom que tingui. Abans només es reconeixien les
+    // vies amb un codi o un nom d'una llista, i si no en sortia cap es
+    // mostraven els carrers més llargs, normalment els de l'inici.
+    function viesPrincipals(steps, extras, distTotalM) {
+        const rangsRapida = rangs(extras, 'waycategory', v => (v & 1) === 1);
+        const rangsPrincipal = rangs(extras, 'waytype', v => v === 1);
+        const acumulat = new Map();
+        let distRapidaSenseNom = 0;
+
+        (steps || []).forEach((s, i) => {
+            const d = Number(s.distance) || 0;
+            if (d <= 0) return;
+            const rapida = fraccioDins(s.way_points, rangsRapida) >= 0.5;
+            const principal = rapida || fraccioDins(s.way_points, rangsPrincipal) >= 0.5;
+            const via = identificarVia(s.name);
+            if (!via) { if (rapida) distRapidaSenseNom += d; return; }
+            const a = acumulat.get(via.clau) || { ...via, dist: 0, ordre: i, rapida: false, principal: false };
+            a.dist += d;
+            a.rapida = a.rapida || rapida || /^(AP|A|B|C)-/.test(via.codi || '');
+            a.principal = a.principal || principal || via.reconeguda;
+            acumulat.set(via.clau, a);
+        });
+
+        const vies = [...acumulat.values()];
+        const llindar = Math.max(800, distTotalM * 0.04);
+        // Les autopistes i autovies pesen més que els carrers principals.
+        // Les carreteres amb codi oficial (A-2, B-20, C-31...) són les que
+        // defineixen el trajecte: pesen més que un carrer, encara que sigui ràpid.
+        const pes = v => v.dist * (v.codi ? 3 : v.rapida ? 1.5 : 1);
+        // Es mostra una sola via: la que defineix el trajecte (la ronda, la
+        // Gran Via, la C-32...). Les autopistes pesen el doble que els carrers.
+        let principal = vies.filter(v => v.principal && v.dist >= llindar).sort((a, b) => pes(b) - pes(a))[0];
+        if (!principal && distRapidaSenseNom >= llindar) principal = { etiqueta: 'Autopista / autovia', rapida: true };
+        if (!principal) principal = vies.filter(v => v.dist >= 400).sort((a, b) => b.dist - a.dist)[0];
+
+        const segments = principal ? [{ tipus: 'VIA', etiqueta: principal.etiqueta, rapida: principal.rapida }] : [];
+
+        return {
+            segments,
+            codis: new Set(vies.filter(v => v.codi && v.dist >= 300).map(v => v.codi))
+        };
+    }
+
+    // Imports orientatius: revisa'ls periòdicament.
+    const PEATGES = [
+        { nom: 'Túnels de Vallvidrera', codi: 'C-16', cotxe: 4.90, moto: 3.20, zona: { latMin: 41.405, latMax: 41.440, lonMin: 2.070, lonMax: 2.125 } },
+        { nom: 'Garraf', codi: 'C-32', cotxe: 7.80, moto: 5.00, zona: { latMin: 41.200, latMax: 41.300, lonMin: 1.700, lonMax: 1.900 } }
+    ];
+
+    function peatgesAplicables(codis, geometria, extras) {
+        const rangsPeatge = rangs(extras, 'tollways', v => v === 1);
+        const dinsRangPeatge = idx => rangsPeatge.some(([a, b]) => idx >= a && idx <= b);
+        const trobats = [];
+        for (const p of PEATGES) {
+            const indexsZona = [];
+            (geometria || []).forEach(([lon, lat], idx) => {
+                if (lat >= p.zona.latMin && lat <= p.zona.latMax && lon >= p.zona.lonMin && lon <= p.zona.lonMax) indexsZona.push(idx);
+            });
+            if (!indexsZona.length) continue;
+            if (indexsZona.some(dinsRangPeatge) || codis.has(p.codi)) trobats.push(p);
+        }
+        // Peatge detectat per ORS en un lloc que no tenim tarifat: l'avisem sense import.
+        if (!trobats.length && rangsPeatge.length) trobats.push({ nom: '(import no calculat)', cotxe: 0, moto: 0, senseImport: true });
+        return trobats;
+    }
+
+    // ------------------------------------------------------------------
+    // TRANSPORT PÚBLIC (TMB / OpenTripPlanner)
+    // ------------------------------------------------------------------
+    // sentit 'anada': de casa a l'hospital, arribant com a tard a l'hora indicada.
+    // sentit 'tornada': de l'hospital a casa, sortint com a d'hora a l'hora indicada.
+    async function calcularTransportPublic(lat, lon, instant, sentit, pistes = crearPistesEstacions(1)) {
+        const anada = sentit === 'anada';
+        const refMs = instant.getTime();
+        const horaStr = formatHora(refMs);
+        const dataStr = `${String(instant.getMonth() + 1).padStart(2, '0')}-${String(instant.getDate()).padStart(2, '0')}-${instant.getFullYear()}`;
+        const casa = `${lat},${lon}`, hospital = `${DESTI_LAT},${DESTI_LON}`;
+        const variants = [
+            { mode: 'TRANSIT,WALK', optimize: 'QUICK' },
+            { mode: 'TRANSIT,WALK', optimize: 'TRANSFERS' },
+            // Sense tram (TMB classifica alguns trams com a tren: es filtren pel nom).
+            { mode: 'BUS,SUBWAY,RAIL,WALK', optimize: 'QUICK', walkReluctance: '1.5', senseTram: true }
+        ];
+
+        async function fetchPlanner(variant, puntCasa = casa) {
+            const params = new URLSearchParams({
+                app_id: APP_ID_TMB, app_key: APP_KEY_TMB,
+                fromPlace: anada ? puntCasa : hospital, toPlace: anada ? hospital : puntCasa,
+                date: dataStr, time: horaStr, arriveBy: anada ? 'true' : 'false',
+                mode: variant.mode, optimize: variant.optimize,
+                maxWalkDistance: '2000', walkReluctance: variant.walkReluctance || '2', transferPenalty: '300',
+                showIntermediateStops: 'true', numItineraries: '6'
+            });
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 20000);
+            try {
+                const resp = await fetch(`https://api.tmb.cat/v1/planner/plan?${params}`, { headers: { Accept: 'application/json' }, signal: controller.signal });
+                if (!resp.ok) { console.warn('TMB planner HTTP', resp.status, sentit, variant); return { itineraris: [] }; }
+                const dades = await resp.json();
+                let itineraris = Array.isArray(dades?.plan?.itineraries) ? dades.plan.itineraries : [];
+                if (variant.senseTram) itineraris = itineraris.filter(i => !i.legs?.some(l => normalitzarModeTMB(l) === 'TRAM'));
+                return { itineraris };
+            } catch (e) {
+                console.warn('TMB planner error', sentit, variant, e);
+                return { itineraris: [], errorXarxa: esErrorDeXarxa(e) };
+            } finally { clearTimeout(timeout); }
+        }
+
+        // Consulta des de les estacions de tren o metro properes a casa, amb la
+        // caminada fins a l'estació afegida, perquè l'opció "a peu fins a l'estació"
+        // existeixi sempre encara que TMB no la proposi.
+        // 1a ronda: consultes principals, i en paral·lel la cerca a OpenStreetMap.
+        const osm = estacionsProperes(lat, lon);
+        let principals = [];
+        try { principals = await Promise.all(variants.map(v => fetchPlanner(v))); }
+        finally {
+            // Les parades de tren o metro properes a casa que surten a les rutes de TMB
+            // (d'anada o de tornada) indiquen on és l'estació, encara que TMB no la
+            // proposi en aquest sentit (p. ex. la R4 de Sant Joan Despí).
+            pistes.aportar(estacionsDeTMB(principals.flatMap(r => r.itineraris), lat, lon));
+        }
+        // 2a ronda: consulta des de les estacions properes, amb la caminada afegida.
+        const deTMB = await pistes.totes();
+        // Si TMB ja ha donat l'estació, no s'espera OpenStreetMap (només es fa servir si ja ha respost).
+        const deOSM = deTMB.length ? await Promise.race([osm, Promise.resolve([])]) : await osm;
+        const jaUsades = new Set(principals.flatMap(r => r.itineraris).map(i => {
+            const t = i.legs.filter(l => ['RAIL', 'SUBWAY'].includes(normalitzarModeTMB(l)));
+            const p = anada ? t[0]?.from : t[t.length - 1]?.to;
+            return p ? normalitzarMunicipi(p.name || '') : '';
+        }));
+        const vistesE = new Set();
+        const estacions = [...deTMB, ...deOSM]
+            .sort((a, b) => a.m - b.m)
+            .filter(e => { const k = normalitzarMunicipi(e.nom); if (vistesE.has(k) || jaUsades.has(k)) return false; vistesE.add(k); return true; })
+            .slice(0, 2);
+        estacionsTrobades.tmb = [...new Set(deTMB.map(e => `${e.nom} (${Math.round(e.m)} m)`))];
+        estacionsTrobades[`consultades_${sentit}`] = estacions.map(e => e.nom);
+        const desDeEstacions = await Promise.all(estacions.map(e =>
+            fetchPlanner({ mode: 'TRANSIT,WALK', optimize: 'QUICK' }, `${e.lat},${e.lon}`)
+                .then(r => ({ ...r, errorXarxa: false, itineraris: r.itineraris.map(i => ambCaminadaFinsEstacio(i, e, { lat, lon }, anada)).filter(Boolean) }))));
+        const respostes = [...principals, ...desDeEstacions];
+        const errorXarxa = principals.every(r => r.errorXarxa);
+        const vistos = new Set();
+        const tots = respostes.flatMap(r => r.itineraris)
+            .filter(i => Array.isArray(i?.legs) && i.legs.some(l => normalitzarModeTMB(l) !== 'WALK'))
+            .filter(i => { // fora repetits (diverses consultes poden retornar la mateixa opció)
+                const clau = `${obtenirInstantOTP(i, 'startTime')}|${obtenirInstantOTP(i, 'endTime')}|` +
+                    i.legs.filter(l => normalitzarModeTMB(l) !== 'WALK').map(l => campsRuta(l).curt).join('>');
+                if (vistos.has(clau)) return false;
+                vistos.add(clau); return true;
+            });
+        // Si TMB només proposa un tram curt fins a l'estació, afegim nosaltres
+        // l'opció de fer aquest tros a peu, perquè es pugui comparar.
+        tots.push(...tots.map(i => alternativaAPeu(i, sentit, { lat, lon })).filter(Boolean));
+        if (!tots.length) return { ok: false, errorXarxa, text: 'TMB no ha pogut calcular la ruta' };
+
+        const candidats = tots.map(i => {
+            const durada = Number(i.duration);
+            let startMs = obtenirInstantOTP(i, 'startTime');
+            let endMs = obtenirInstantOTP(i, 'endTime');
+            if (!Number.isFinite(startMs) && Number.isFinite(endMs) && Number.isFinite(durada)) startMs = endMs - durada * 1000;
+            if (!Number.isFinite(endMs) && Number.isFinite(startMs) && Number.isFinite(durada)) endMs = startMs + durada * 1000;
+            if (!Number.isFinite(startMs) && Number.isFinite(durada)) { startMs = anada ? refMs - durada * 1000 : refMs; endMs = startMs + durada * 1000; }
+            const trams = i.legs.filter(l => normalitzarModeTMB(l) !== 'WALK');
+            const transbords = Math.max(0, trams.length - 1);
+            // Durada del viatge (de porta a porta) i espera a l'hospital: a l'anada,
+            // el temps que arribes abans de l'hora d'entrada; a la tornada, el que
+            // esperes des que plegues fins que surt el transport.
+            const tempsS = (endMs - startMs) / 1000;
+            const esperaS = Math.max(0, anada ? (refMs - endMs) / 1000 : (startMs - refMs) / 1000);
+            return {
+                itinerari: i, trams, transbords, durada, startMs, endMs, tempsS, esperaS,
+                // Durada del viatge, més un terç de l'espera, +5 min per transbord, +6 min per
+                // cada tram curt d'accés prescindible i, a partir de 8 minuts caminant al
+                // principi o al final, cada minut a peu compta doble.
+                cost: tempsS + esperaS / 3 + transbords * 300 + tramsCurtsPrescindibles(trams) * 360 + penalitzacioCaminar(i.legs),
+                foraHorari: anada ? endMs > refMs + 60000 : startMs < refMs - 60000,
+                motiuAbsurd: motiuItinerariAbsurd(i, sentit),
+                linies: trams.map(l => { const s = liniaDeLeg(l); return `${NOM_TIPUS[s.tipus] || ''} ${s.nom}`.trim(); }).join(' > ')
+            };
+        }).filter(c => Number.isFinite(c.cost) && c.cost > 0);
+
+        console.log(`Transport públic (${sentit}): opcions retornades per TMB`);
+        console.table(candidats.map(c => ({
+            linies: c.linies, surt: formatHora(c.startMs), arriba: formatHora(c.endMs),
+            min: Math.round(c.durada / 60), transbords: c.transbords,
+            descartat: c.motiuAbsurd || (c.foraHorari ? (anada ? 'arriba tard' : 'surt abans de plegar') : '')
+        })));
+
+        let pool = candidats.filter(c => !c.motiuAbsurd && !c.foraHorari);
+        if (!pool.length) pool = candidats.filter(c => !c.foraHorari);
+        if (!pool.length) pool = candidats;
+        if (!pool.length) return { ok: false, text: 'TMB no ha retornat cap ruta vàlida' };
+
+        pool.sort((a, b) => (a.cost - b.cost) || (a.transbords - b.transbords));
+        const millor = pool[0];
+
+        // Diagnòstic: a la consola, escriu copy(diagnosticTP) i enganxa'l al xat.
+        const nomParada = p => p?.name || (Number.isFinite(Number(p?.lat)) ? `${Number(p.lat).toFixed(4)},${Number(p.lon).toFixed(4)}` : '?');
+        window.diagnosticTP = window.diagnosticTP || {};
+        window.diagnosticTP.estacions = estacionsTrobades;
+        window.diagnosticTP[sentit] = candidats.sort((a, b) => a.cost - b.cost).map(c => ({
+            triat: c === millor,
+            linies: c.linies, surt: formatHora(c.startMs), arriba: formatHora(c.endMs),
+            cost_min: Math.round(c.cost / 60), durada_min: Math.round(c.tempsS / 60), espera_min: Math.round(c.esperaS / 60), transbords: c.transbords,
+            des_de_estacio: c.itinerari.desDeEstacio || '',
+            a_peu_construida: Boolean(c.itinerari.aPeuConstruida),
+            descartat: c.motiuAbsurd || (c.foraHorari ? 'fora d\'horari' : ''),
+            trams: c.itinerari.legs.map(l => `${normalitzarModeTMB(l)} ${campsRuta(l).curt || ''}: ${nomParada(l.from)} > ${nomParada(l.to)} (${Math.round(Number(l.distance) || 0)} m)`)
+        }));
+
+        const segments = [];
+        millor.trams.forEach(l => {
+            const s = liniaDeLeg(l);
+            const prev = segments[segments.length - 1];
+            if (!prev || prev.tipus !== s.tipus || prev.nom !== s.nom) segments.push(s);
+        });
+        const distM = millor.itinerari.legs.reduce((t, l) => t + (Number(l?.distance) > 0 ? Number(l.distance) : 0), 0);
+        // CO2 tram a tram: cada mitjà amb el seu factor; els trams a peu no compten.
+        const co2g = millor.itinerari.legs.reduce((t, l) => {
+            const mode = normalitzarModeTMB(l);
+            const km = Number(l?.distance) > 0 ? Number(l.distance) / 1000 : 0;
+            return mode === 'WALK' ? t : t + km * (FACTORS_CO2[mode] ?? FACTORS_CO2.TRANSIT);
+        }, 0);
+        return {
+            ok: true,
+            tempsMin: Math.round(millor.tempsS / 60),
+            distanciaKm: distM > 0 ? Math.round(distM / 100) / 10 : null,
+            segments, co2g,
+            horari: anada
+                ? `Surts a les ${formatHora(millor.startMs)} i arribes a les ${formatHora(millor.endMs)}` +
+                  (millor.esperaS >= 600 ? `, ${Math.round(millor.esperaS / 60)} min abans de l'hora d'entrada` : '')
+                : `Agafes el transport a les ${formatHora(millor.startMs)} i arribes a casa a les ${formatHora(millor.endMs)}`
+        };
+    }
+
+    // Pistes d'estacions compartides entre l'anada i la tornada: cada sentit hi
+    // aporta les parades de tren o metro properes a casa que ha vist a TMB, i
+    // espera les de l'altre sentit (com a màxim 20 s, per no quedar-se penjat).
+    function crearPistesEstacions(sentits = 2) {
+        const llista = []; let pendents = sentits, avisar;
+        const llestes = new Promise(ok => { avisar = ok; });
+        const limit = new Promise(ok => setTimeout(ok, 20000));
+        return {
+            aportar(estacions) { llista.push(...estacions); if (--pendents <= 0) avisar(); },
+            totes: () => Promise.race([llestes, limit]).then(() => llista.slice())
+        };
+    }
+
+    function estacionsDeTMB(itineraris, lat, lon) {
+        const out = [];
+        itineraris.forEach(i => (i.legs || []).forEach(l => {
+            if (!['RAIL', 'SUBWAY'].includes(normalitzarModeTMB(l))) return;
+            [l.from, l.to, ...(l.intermediateStops || [])].forEach(p => {
+                const plat = Number(p?.lat), plon = Number(p?.lon);
+                if (!p?.name || !Number.isFinite(plat) || !Number.isFinite(plon)) return;
+                const m = distanciaMetres(lat, lon, plat, plon);
+                if (m <= 900) out.push({ nom: p.name, lat: plat, lon: plon, m });
+            });
+        }));
+        return out;
+    }
+
+    // Estacions de tren o metro a menys de 900 m de casa, segons OpenStreetMap
+    // (Overpass). És un complement: sovint va saturat i, si no respon en 5 s, s'ignora.
+    const cacheEstacions = new Map();
+    let estacionsTrobades = { overpass: 'sense consultar', tmb: [] };
+
+    function estacionsProperes(lat, lon) {
+        const clau = `${lat.toFixed(5)},${lon.toFixed(5)}`;
+        if (!cacheEstacions.has(clau)) cacheEstacions.set(clau, (async () => {
+            try {
+                const consulta = `[out:json][timeout:5];nwr(around:900,${lat},${lon})[railway=station];out center 12;`;
+                const r = await fetchAmbTemps(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(consulta)}`, {}, 5000);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const llista = ((await r.json()).elements || [])
+                    .map(e => ({ nom: e.tags?.name || 'Estació', lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon }))
+                    .filter(e => Number.isFinite(e.lat) && Number.isFinite(e.lon))
+                    .map(e => ({ ...e, m: distanciaMetres(lat, lon, e.lat, e.lon) }))
+                    .filter(e => e.m <= 900);
+                estacionsTrobades.overpass = `${llista.length} estacions`;
+                return llista;
+            } catch (e) {
+                estacionsTrobades.overpass = `error (${e?.name === 'AbortError' ? 'no ha respost a temps' : e?.message || e})`;
+                return [];
+            }
+        })());
+        return cacheEstacions.get(clau);
+    }
+
+    // Afegeix la caminada de casa a l'estació (anada) o de l'estació a casa (tornada).
+    function ambCaminadaFinsEstacio(it, estacio, casa, anada) {
+        if (!Array.isArray(it?.legs)) return null;
+        const m = distanciaMetres(casa.lat, casa.lon, estacio.lat, estacio.lon) * FACTOR_RECORREGUT;
+        const s = m / VELOCITAT_A_PEU;
+        const inici = obtenirInstantOTP(it, 'startTime'), fi = obtenirInstantOTP(it, 'endTime');
+        if (!Number.isFinite(inici) || !Number.isFinite(fi)) return null;
+        const peu = { mode: 'WALK', distance: m, duration: s, from: anada ? { ...casa, name: 'Casa' } : { lat: estacio.lat, lon: estacio.lon, name: estacio.nom }, to: anada ? { lat: estacio.lat, lon: estacio.lon, name: estacio.nom } : { ...casa, name: 'Casa' } };
+        return anada
+            ? { ...it, startTime: inici - s * 1000, duration: (fi - inici) / 1000 + s, legs: [peu, ...it.legs], desDeEstacio: estacio.nom }
+            : { ...it, endTime: fi + s * 1000, duration: (fi - inici) / 1000 + s, legs: [...it.legs, peu], desDeEstacio: estacio.nom };
+    }
+
+    // Construeix la mateixa ruta fent a peu el tram curt d'accés (o de sortida):
+    // a l'anada, de casa a la parada on s'agafa el segon transport; a la tornada,
+    // de la parada on es baixa del penúltim transport fins a casa.
+    const VELOCITAT_A_PEU = 1.25; // m/s
+    const FACTOR_RECORREGUT = 1.3; // els carrers no van en línia recta
+    const MAX_A_PEU_M = 1300;
+
+    function alternativaAPeu(it, sentit, casa) {
+        const legs = it.legs;
+        const idx = legs.map((l, i) => normalitzarModeTMB(l) !== 'WALK' ? i : -1).filter(i => i >= 0);
+        if (idx.length < 2) return null;
+        const curt = l => Number(l?.distance) > 0 && Number(l.distance) < 1200;
+        const metresA = p => distanciaMetres(casa.lat, casa.lon, Number(p?.lat), Number(p?.lon)) * FACTOR_RECORREGUT;
+        if (sentit === 'anada') {
+            if (!curt(legs[idx[0]])) return null;
+            const seguent = legs[idx[1]];
+            const m = metresA(seguent.from), sortidaSeguent = obtenirInstantOTP(seguent, 'startTime');
+            if (!(m <= MAX_A_PEU_M) || !Number.isFinite(sortidaSeguent)) return null;
+            const inici = sortidaSeguent - (m / VELOCITAT_A_PEU) * 1000 - 120000; // 2 min de marge a l'andana
+            const fi = obtenirInstantOTP(it, 'endTime');
+            return { ...it, startTime: inici, duration: (fi - inici) / 1000, aPeuConstruida: true,
+                legs: [{ mode: 'WALK', distance: m, from: { lat: casa.lat, lon: casa.lon }, to: seguent.from }, ...legs.slice(idx[1])] };
+        }
+        if (!curt(legs[idx[idx.length - 1]])) return null;
+        const anterior = legs[idx[idx.length - 2]];
+        const m = metresA(anterior.to), arribadaAnterior = obtenirInstantOTP(anterior, 'endTime');
+        if (!(m <= MAX_A_PEU_M) || !Number.isFinite(arribadaAnterior)) return null;
+        const fi = arribadaAnterior + (m / VELOCITAT_A_PEU) * 1000;
+        const inici = obtenirInstantOTP(it, 'startTime');
+        return { ...it, endTime: fi, duration: (fi - inici) / 1000, aPeuConstruida: true,
+            legs: [...legs.slice(0, idx[idx.length - 2] + 1), { mode: 'WALK', distance: m, from: anterior.to, to: { lat: casa.lat, lon: casa.lon } }] };
+    }
+
+    // Caminada d'accés (de casa al primer transport) i de sortida (de l'últim transport
+    // a la destinació). Fins a 8 minuts compta tal com és; a partir d'aquí, cada minut
+    // compta com a dos. Les caminades dels transbords no es penalitzen.
+    const MINUTS_A_PEU_SENSE_PENALITZACIO = 8;
+
+    function penalitzacioCaminar(legs) {
+        const durada = l => Number(l?.duration) > 0 ? Number(l.duration) : (Number(l?.distance) || 0) / VELOCITAT_A_PEU;
+        const esPeu = l => normalitzarModeTMB(l) === 'WALK';
+        const primer = legs.findIndex(l => !esPeu(l));
+        if (primer < 0) return 0;
+        let ultim = legs.length - 1;
+        while (ultim >= 0 && esPeu(legs[ultim])) ultim--;
+        const acces = legs.slice(0, primer).reduce((t, l) => t + durada(l), 0);
+        const sortida = legs.slice(ultim + 1).reduce((t, l) => t + durada(l), 0);
+        const limit = MINUTS_A_PEU_SENSE_PENALITZACIO * 60;
+        return Math.max(0, acces - limit) + Math.max(0, sortida - limit);
+    }
+
+    // Trams curts d'accés: el primer o l'últim tram de transport, de menys de
+    // 1,2 km, quan després (o abans) n'hi ha d'altres. Normalment es poden fer a
+    // peu en pocs minuts i estalvien un transbord (p. ex. un tram fins a l'estació).
+    function tramsCurtsPrescindibles(trams) {
+        if (trams.length < 2) return 0;
+        const curt = l => Number(l?.distance) > 0 && Number(l.distance) < 1200;
+        return (curt(trams[0]) ? 1 : 0) + (curt(trams[trams.length - 1]) ? 1 : 0);
+    }
+
+    // Detecta itineraris sense sentit pràctic. A l'anada, baixar d'un vehicle
+    // que ja arribava (o passava) per l'hospital; a la tornada, el mateix a
+    // l'inrevés: anar a buscar més lluny una línia que es podia agafar a l'hospital.
+    function motiuItinerariAbsurd(itinerari, sentit = 'anada') {
+        const trams = (itinerari?.legs || []).filter(l => normalitzarModeTMB(l) !== 'WALK');
+        const esL1 = leg => normalitzarModeTMB(leg) === 'SUBWAY' && campsRuta(leg).curt.toUpperCase() === 'L1';
+        if (sentit === 'anada') {
+            for (let k = 0; k < trams.length - 1; k++) {
+                const leg = trams[k];
+                const parades = [...(Array.isArray(leg.intermediateStops) ? leg.intermediateStops : []), leg.to];
+                if (parades.some(p => distAlDesti(p) <= 250)) return 'passa per l\'hospital i continua';
+                const retol = String(leg.headsign || leg.tripHeadsign || '').toUpperCase();
+                if (/HOSP(ITAL|\.)?\s*(DE\s+)?BELLVITGE/.test(retol)) return 'baixa d\'una línia que anava a l\'hospital';
+                if (esL1(leg) && distAlDesti(leg.to) < 2000) return 'baixa de la L1 abans del final';
+            }
+        } else {
+            for (let k = 1; k < trams.length; k++) {
+                const leg = trams[k];
+                const parades = [leg.from, ...(Array.isArray(leg.intermediateStops) ? leg.intermediateStops : [])];
+                if (parades.some(p => distAlDesti(p) <= 250)) return 'aquesta línia ja passava per l\'hospital';
+                if (esL1(leg) && distAlDesti(leg.from) < 2000) return 'agafa la L1 lluny de la parada de l\'hospital';
+            }
+        }
+        return null;
+    }
+
+    function obtenirInstantOTP(itinerary, field) {
+        const raw = itinerary?.[field];
+        if (raw === null || raw === undefined || raw === '') return NaN;
+        const n = Number(raw);
+        if (Number.isFinite(n)) return n < 1e12 ? n * 1000 : n;
+        const parsed = Date.parse(String(raw));
+        return Number.isFinite(parsed) ? parsed : NaN;
+    }
+
+    function campsRuta(leg) {
+        const route = leg?.route && typeof leg.route === 'object' ? leg.route : {};
+        const pick = (...vals) => vals.map(v => String(v ?? '').trim()).find(Boolean) || '';
+        return {
+            curt: pick(leg?.routeShortName, leg?.route_short_name, route.shortName, route.short_name, route.routeShortName, typeof leg?.route === 'string' ? leg.route : ''),
+            llarg: pick(leg?.routeLongName, leg?.route_long_name, route.longName, route.long_name, route.routeLongName),
+            agencia: pick(leg?.agencyName, leg?.agency_name, leg?.agency?.name, route.agencyName, leg?.agencyId)
+        };
+    }
+
+    function normalitzarModeTMB(leg) {
+        const mode = String(leg?.mode ?? leg?.transportMode ?? '').toUpperCase().trim();
+        if (mode === 'WALK' || mode === 'FOOT') return 'WALK';
+        if (['BUS', 'TROLLEYBUS', 'COACH'].includes(mode)) return 'BUS';
+        if (mode === 'SUBWAY' || mode === 'METRO') return 'SUBWAY';
+        if (mode === 'TRAM' || mode === 'LIGHTRAIL') return 'TRAM';
+        // TMB marca alguns trams (p. ex. el T2) com a tren: el nom de la línia mana.
+        if (/^T[1-6]$/i.test(campsRuta(leg).curt) && ['RAIL', 'TRAIN', 'TRAM', 'LIGHTRAIL'].includes(mode)) return 'TRAM';
+        if (['RAIL', 'TRAIN', 'COMMUTER_RAIL', 'FUNICULAR', 'CABLE_CAR', 'GONDOLA'].includes(mode)) return 'RAIL';
+        const { curt, llarg, agencia } = campsRuta(leg);
+        const t = `${curt} ${llarg} ${agencia}`.toUpperCase();
+        if (/RODALIES|RENFE|\bFGC\b|FERROCARRILS/.test(t)) return 'RAIL';
+        if (/\bTRAM\b|\bT[1-6]\b/.test(t)) return 'TRAM';
+        if (/\bMETRO\b|SUBWAY/.test(t)) return 'SUBWAY';
+        if (/\bBUS\b|AUTOB/.test(t)) return 'BUS';
+        return mode || 'TRANSIT';
+    }
+
+    function liniaDeLeg(leg) {
+        const mode = normalitzarModeTMB(leg);
+        const { curt, llarg, agencia } = campsRuta(leg);
+        const nom = curt || llarg || '';
+        if (mode === 'BUS') return { tipus: 'BUS', nom: nom || 'Bus' };
+        if (mode === 'TRAM') return { tipus: 'TRAM', nom: nom || 'Tram' };
+        if (mode === 'SUBWAY') {
+            const esFGC = /FGC|FERROCARRILS/.test(agencia.toUpperCase()) || /^(L6|L7|L8|L12)$/i.test(curt);
+            return { tipus: esFGC ? 'FGC' : 'METRO', nom: nom || 'Metro' };
+        }
+        if (mode === 'RAIL') {
+            const t = `${curt} ${llarg} ${agencia}`.toUpperCase();
+            const esFGC = /FGC|FERROCARRILS DE LA GENERALITAT/.test(t) || /^(S\d+|R5|R6|R50|R60|L6|L7|L8|L12)$/i.test(curt);
+            const esRodalies = /RENFE|RODALIES|ADIF/.test(t) || /^(R\d+[NS]?|RG\d|RL\d|RT\d)$/i.test(curt);
+            return { tipus: esFGC ? 'FGC' : (esRodalies ? 'RODALIES' : 'TREN'), nom: nom || 'Tren' };
+        }
+        return { tipus: 'TP', nom: nom || agencia || 'Transport públic' };
+    }
+
+
+    // ------------------------------------------------------------------
+    // INFORME EN PDF
+    // Es genera directament al navegador, sense llibreries externes: el text
+    // queda nítid i seleccionable i funciona també sense connexió.
+    // ------------------------------------------------------------------
+
+    // Enllaç a Karos: posa-hi l'adreça i sortirà a l'app i a l'informe.
+    const ENLLAC_KAROS = "";
+
+    // Recursos que surten al final de l'informe. Afegeix-hi els de l'hospital
+    // (aparcament de bicicletes, pla de mobilitat, contacte...) amb el mateix format.
+    const RECURSOS_INFORME = [
+        { titol: 'Abonament de transport públic', text: "La T-usual permet fer viatges il·limitats durant 30 dies dins la zona tarifària corresponent.", enllac: '' },
+        { titol: 'Cotxe compartit', text: "Karos posa en contacte persones que fan trajectes semblants per compartir cotxe i despeses.", enllac: ENLLAC_KAROS }
+    ];
+
+    // Amplades de Helvetica i Helvetica-Bold (codificació WinAnsi, 1/1000 em).
+    const AMPLADES = {"R":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,350,556,350,222,556,333,1000,556,556,333,1000,667,333,1000,350,611,350,350,222,222,333,333,350,556,1000,333,1000,500,333,944,350,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500],"B":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,350,556,350,278,556,500,1000,556,556,333,1000,667,333,1000,350,611,350,350,278,278,500,500,350,556,1000,333,1000,556,333,944,350,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556]};
+    const UNI_WINANSI = { 0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85, 0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A, 0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92, 0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97, 0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C, 0x017E: 0x9E, 0x0178: 0x9F };
+
+    function codisWinAnsi(str) {
+        const out = [];
+        for (const ch of String(str).normalize('NFC')) {
+            const c = ch.codePointAt(0);
+            if (c < 128) out.push(c);
+            else if (UNI_WINANSI[c]) out.push(UNI_WINANSI[c]);
+            else if (c >= 0xA0 && c <= 0xFF) out.push(c);
+            else if (c === 0x2082) out.push(50); // ₂ -> 2 (el subíndex es dibuixa a part)
+            else out.push(63);
+        }
+        return out;
+    }
+    const ampladaText = (t, mida, negreta) => codisWinAnsi(t).reduce((s, c) => s + (AMPLADES[negreta ? 'B' : 'R'][c] || 556), 0) * mida / 1000;
+    const cadenaPDF = t => '(' + codisWinAnsi(t).map(c => c === 40 || c === 41 || c === 92 ? '\\' + String.fromCharCode(c) : (c < 32 || c > 126 ? '\\' + c.toString(8).padStart(3, '0') : String.fromCharCode(c))).join('') + ')';
+    const rgb = hex => { const n = parseInt(hex.replace('#', ''), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(' '); };
+    const n2 = v => (Math.round(v * 100) / 100).toString();
+
+    // Escriptor de PDF mínim (A4, coordenades amb l'origen a dalt a l'esquerra).
+    class DocPDF {
+        constructor() { this.W = 595.28; this.H = 841.89; this.pagines = []; this.imatge = null; this.novaPagina(); }
+        novaPagina() { this.c = []; this.links = []; this.pagines.push({ c: this.c, links: this.links }); }
+        rect(x, y, w, h, color) { this.c.push(`${rgb(color)} rg ${n2(x)} ${n2(this.H - y - h)} ${n2(w)} ${n2(h)} re f`); }
+        vora(x, y, w, h, color, g = 0.75) { this.c.push(`${rgb(color)} RG ${g} w ${n2(x)} ${n2(this.H - y - h)} ${n2(w)} ${n2(h)} re S`); }
+        linia(x1, y1, x2, y2, color, g = 0.75) { this.c.push(`${rgb(color)} RG ${g} w ${n2(x1)} ${n2(this.H - y1)} m ${n2(x2)} ${n2(this.H - y2)} l S`); }
+        text(x, y, t, { mida = 9, negreta = false, color = '#1f2a33', rise = 0 } = {}) {
+            if (!t) return;
+            this.c.push(`BT /${negreta ? 'F2' : 'F1'} ${mida} Tf ${rgb(color)} rg ${n2(rise)} Ts 1 0 0 1 ${n2(x)} ${n2(this.H - y)} Tm ${cadenaPDF(t)} Tj ET`);
+        }
+        enllac(x, y, w, h, url) { this.links.push({ x, y, w, h, url }); }
+        dibuixarImatge(x, y, w, h) { if (this.imatge) this.c.push(`q ${n2(w)} 0 0 ${n2(h)} ${n2(x)} ${n2(this.H - y - h)} cm /Im1 Do Q`); }
+
+        bytes() {
+            const parts = [], offsets = [];
+            let longitud = 0;
+            const afegir = p => { const b = typeof p === 'string' ? new TextEncoder().encode(p) : p; parts.push(b); longitud += b.length; };
+            const objectes = [];
+            const reservar = () => { objectes.push(null); return objectes.length; };
+            const cat = reservar(), arbre = reservar(), f1 = reservar(), f2 = reservar();
+            const img = this.imatge ? reservar() : 0;
+            const pags = this.pagines.map(p => {
+                const pagina = reservar(), contingut = reservar();
+                const anots = p.links.map(() => reservar());
+                return { p, pagina, contingut, anots };
+            });
+            objectes[cat - 1] = `<< /Type /Catalog /Pages ${arbre} 0 R >>`;
+            objectes[arbre - 1] = `<< /Type /Pages /Kids [${pags.map(x => `${x.pagina} 0 R`).join(' ')}] /Count ${pags.length} >>`;
+            objectes[f1 - 1] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+            objectes[f2 - 1] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+            if (img) objectes[img - 1] = { dict: `<< /Type /XObject /Subtype /Image /Width ${this.imatge.w} /Height ${this.imatge.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${this.imatge.dades.length} >>`, stream: this.imatge.dades };
+            pags.forEach(({ p, pagina, contingut, anots }) => {
+                objectes[pagina - 1] = `<< /Type /Page /Parent ${arbre} 0 R /MediaBox [0 0 ${this.W} ${this.H}] /Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >>${img ? ` /XObject << /Im1 ${img} 0 R >>` : ''} >> /Contents ${contingut} 0 R${anots.length ? ` /Annots [${anots.map(a => `${a} 0 R`).join(' ')}]` : ''} >>`;
+                const flux = p.c.join('\n');
+                objectes[contingut - 1] = { dict: `<< /Length ${new TextEncoder().encode(flux).length} >>`, stream: flux };
+                p.links.forEach((l, i) => {
+                    objectes[anots[i] - 1] = `<< /Type /Annot /Subtype /Link /Rect [${n2(l.x)} ${n2(this.H - l.y - l.h)} ${n2(l.x + l.w)} ${n2(this.H - l.y)}] /Border [0 0 0] /A << /S /URI /URI ${cadenaPDF(l.url)} >> >>`;
+                });
+            });
+            afegir('%PDF-1.4\n'); afegir(new Uint8Array([37, 226, 227, 207, 211, 10]));
+            objectes.forEach((o, i) => {
+                offsets.push(longitud);
+                if (typeof o === 'string') afegir(`${i + 1} 0 obj\n${o}\nendobj\n`);
+                else { afegir(`${i + 1} 0 obj\n${o.dict}\nstream\n`); afegir(o.stream); afegir('\nendstream\nendobj\n'); }
+            });
+            const xref = longitud;
+            afegir(`xref\n0 ${objectes.length + 1}\n0000000000 65535 f \n${offsets.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('')}`);
+            afegir(`trailer\n<< /Size ${objectes.length + 1} /Root ${cat} 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+            const total = new Uint8Array(longitud);
+            let pos = 0; parts.forEach(b => { total.set(b, pos); pos += b.length; });
+            return total;
+        }
+    }
+
+    // Text amb estils i salts de línia. Cada tros: { t, negreta, color }.
+    // El "₂" de CO₂ es dibuixa com a subíndex de veritat.
+    function trossosAmbSubindex(trossos, mida) {
+        const out = [];
+        trossos.forEach(tr => String(tr.t).split(/(₂)/).forEach(part => {
+            if (!part) return;
+            out.push(part === '₂' ? { ...tr, t: '2', mida: mida * 0.7, rise: -mida * 0.18 } : { ...tr, t: part, mida, rise: 0 });
+        }));
+        return out;
+    }
+
+    function partirLinies(trossos, mida, ample) {
+        const segs = trossosAmbSubindex(trossos, mida);
+        const paraules = [];
+        let actual = [];
+        segs.forEach(sg => sg.t.split(/( )/).forEach(p => {
+            if (p === ' ') { if (actual.length) paraules.push(actual); actual = []; }
+            else if (p) actual.push({ ...sg, t: p });
+        }));
+        if (actual.length) paraules.push(actual);
+        const amplP = w => w.reduce((s, sg) => s + ampladaText(sg.t, sg.mida, sg.negreta), 0);
+        const espai = ampladaText(' ', mida, false);
+        const linies = [];
+        let linia = [], w = 0;
+        paraules.forEach(p => {
+            const pw = amplP(p);
+            if (linia.length && w + espai + pw > ample) { linies.push(linia); linia = []; w = 0; }
+            w += (linia.length ? espai : 0) + pw;
+            linia.push(p);
+        });
+        if (linia.length) linies.push(linia);
+        return { linies, espai, amplP };
+    }
+
+    function paragraf(doc, x, y, ample, trossos, { mida = 9, interlinia = 1.4, dibuixar = true } = {}) {
+        const { linies, espai, amplP } = partirLinies(trossos, mida, ample);
+        const alt = mida * interlinia;
+        if (dibuixar) linies.forEach((linia, i) => {
+            let cx = x;
+            const by = y + mida + i * alt;
+            linia.forEach(par => {
+                par.forEach(sg => {
+                    doc.text(cx, by, sg.t, { mida: sg.mida, negreta: sg.negreta, color: sg.color || '#1f2a33', rise: sg.rise });
+                    if (sg.url) doc.enllac(cx, by - mida, ampladaText(sg.t, sg.mida, sg.negreta), mida * 1.25, sg.url);
+                    cx += ampladaText(sg.t, sg.mida, sg.negreta);
+                });
+                cx += espai;
+            });
+        });
+        return linies.length * alt;
+    }
+
+    // Logotip en color per al PDF: es rasteritza el SVG a JPEG sobre fons blanc.
+    async function logoJPEG() {
+        try {
+            const svg = await textLogoSVG();
+            if (!svg) throw new Error('SVG no disponible');
+            const vb = svg.match(/viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/);
+            const proporcio = vb ? (+vb[1] / +vb[2]) : 3;
+            const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+            const img = new Image();
+            await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; setTimeout(rej, 3000); });
+            const ample = 900, alt = Math.round(ample / proporcio);
+            const cv = document.createElement('canvas');
+            cv.width = ample; cv.height = alt;
+            const cx = cv.getContext('2d');
+            cx.fillStyle = '#fff'; cx.fillRect(0, 0, ample, alt); cx.drawImage(img, 0, 0, ample, alt);
+            URL.revokeObjectURL(url);
+            const b64 = cv.toDataURL('image/jpeg', 0.92).split(',')[1];
+            return { w: ample, h: alt, dades: Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)) };
+        } catch (e) {
+            console.info('Logotip no disponible per al PDF: es fa servir el text.', e);
+            return null;
+        }
+    }
+
+    let darrerResultat = null;
+
+    // Tarifes de Karos per trajecte. Fins a 15 km: la persona passatgera paga 0,30 € i
+    // la conductora en rep 1,80 €; a partir del km 15, tots dos imports pugen 0,10 €/km.
+    // La persona conductora rep aquest import per trajecte, porti les persones que porti.
+    const KAROS = { passatger: 0.30, conductor: 1.80, kmInclosos: 15, perKm: 0.10 };
+    const arrodonir = v => Math.round(v * 100) / 100;
+
+    function calcularKaros(base, ocupants, condueix) {
+        const extra = KAROS.perKm * Math.max(0, base.km - KAROS.kmInclosos);
+        const paga = arrodonir(KAROS.passatger + extra), rep = arrodonir(KAROS.conductor + extra);
+        const trajecte = condueix ? arrodonir(base.costCotxe - rep) : paga;
+        const eurNota = v => `${v.toFixed(2).replace('.', ',')} €`;
+        const nota = condueix
+            ? `Reps ${eurNota(rep)} per trajecte` + (trajecte < 0 ? `: cobreix el combustible i encara et sobren ${eurNota(-trajecte * TRAJECTES_MES)} al mes` : '')
+            : `Pagues ${eurNota(paga)} per trajecte`;
+        return {
+            ocupants, condueix, trajecte, mes: trajecte * TRAJECTES_MES, nota,
+            co2g: base.co2Cotxe / ocupants, litres: base.litresCotxe / ocupants
+        };
+    }
+    const nomInformeKaros = x => `Cotxe compartit (${x.ocupants} pers., ${x.condueix ? 'condueixo' : 'no condueixo'})`;
+    const nomInforme = x => x.id === 'karos' ? nomInformeKaros(x) : x.nom;
+
+    async function generarInformePDF(r) {
+        const VERMELL = COLOR_CORPORATIU, TEXT = '#1f2a33', SUAU = '#5a6772', LINIA = '#d9dfe4', VERD = '#2f7d4f';
+        const doc = new DocPDF();
+        doc.imatge = await logoJPEG();
+        const M = 40, AMPLE = doc.W - 2 * M;
+        let y = M;
+        // L'informe ha de ser sempre d'una pàgina: es dibuixa tot seguit i, si al final
+        // no cap, es redueix proporcionalment (vegeu més avall). No es fan salts de pàgina.
+        const espai = () => {};
+
+        const o = Object.fromEntries(r.opcions.map(x => [x.id, x]));
+        const tp = o.tp, cotxe = o.cotxe;
+        const any = x => Number.isFinite(x.mes) ? x.mes * MESOS_LABORABLES : NaN;
+        const eurAny = v => Number.isFinite(v) ? `${v < 0 ? '-' : ''}${Math.round(Math.abs(v)).toLocaleString('ca-ES')} €` : '—';
+        const eurMes = v => Number.isFinite(v) ? `${v < 0 ? '-' : ''}${Math.abs(v).toFixed(2).replace('.', ',')} €` : '—';
+
+        // Capçalera
+        let amplLogo;
+        if (doc.imatge) {
+            // Logotip més petit (abans 36 pt d'alt), centrat amb el títol.
+            const h = 26; amplLogo = Math.min(h * doc.imatge.w / doc.imatge.h, 150);
+            doc.dibuixarImatge(M, y + 3, amplLogo, amplLogo * doc.imatge.h / doc.imatge.w);
+        } else {
+            doc.text(M, y + 13, 'Bellvitge', { mida: 12, negreta: true, color: VERMELL });
+            doc.text(M, y + 23, 'Hospital Universitari', { mida: 7, color: SUAU });
+            amplLogo = Math.max(ampladaText('Bellvitge', 12, true), ampladaText('Hospital Universitari', 7));
+        }
+        const tx = M + amplLogo + 18;
+        doc.text(tx, y + 15, 'El teu informe de mobilitat', { mida: 18, negreta: true });
+        paragraf(doc, tx, y + 20, doc.W - M - tx, [{ t: `Hospital Universitari de Bellvitge, Institut Català de la Salut. Generat el ${dataLlarga(new Date())}`, color: SUAU }], { mida: 8 });
+        y += 48;
+        doc.rect(M, y, AMPLE, 2.5, VERMELL);
+        y += 12;
+
+        // Dades de partida
+        const u = (AMPLE - 16) / 4;
+        [[`Adreça`, r.adreca, 2 * u], [`Hora d'entrada`, r.horaEntrada, u], [`Hora de sortida`, r.horaSortida, u]].reduce((x, [et, val, w]) => {
+            doc.vora(x, y, w, 34, LINIA);
+            doc.text(x + 8, y + 12, et, { mida: 7, color: SUAU });
+            let mida = 10;
+            while (mida > 7 && ampladaText(val, mida, true) > w - 16) mida -= 0.5;
+            let v = val;
+            while (ampladaText(v, mida, true) > w - 16 && v.length > 4) v = v.slice(0, -2) + '…';
+            doc.text(x + 8, y + 26, v, { mida, negreta: true });
+            return x + w + 8;
+        }, M);
+        y += 34 + 12;
+
+        // Resum
+        const estalviCO2 = (cotxe.co2g - tp.co2g) * TRAJECTES_ANY;
+        const estalviEur = any(cotxe) - any(tp);
+        const litresAny = (cotxe.litres || 0) * TRAJECTES_ANY;
+        const tr = textosResum(r.opcions);
+        if (tr) {
+            const titolR = [{ t: tr.titol, negreta: true, color: VERD }];
+            const items = tr.items.map(i => [{ t: `${i.etiqueta}: `, negreta: true }, { t: i.text }]);
+            const ampleText = AMPLE - 44;
+            const hTitol = paragraf(doc, 0, 0, AMPLE - 28, titolR, { mida: 11.5, dibuixar: false });
+            const hItems = items.map(p => paragraf(doc, 0, 0, ampleText, p, { mida: 9.5, dibuixar: false }));
+            const hResum = 10 + hTitol + 4 + hItems.reduce((s2, h) => s2 + h + 3, 0) + 6;
+            doc.rect(M, y, AMPLE, hResum, '#e9f4ee'); doc.rect(M, y, 3.5, hResum, VERD);
+            let yy = y + 7;
+            yy += paragraf(doc, M + 16, yy, AMPLE - 28, titolR, { mida: 11.5 }) + 4;
+            items.forEach((p, i) => {
+                doc.text(M + 18, yy + 9.5, '•', { mida: 9.5, color: VERD });
+                paragraf(doc, M + 28, yy, ampleText, p, { mida: 9.5 });
+                yy += hItems[i] + 3;
+            });
+            y += hResum + 16;
+        }
+
+        const titolRic = (t, x = M, w = AMPLE) => {
+            paragraf(doc, x, y + 0.5, w, [{ t, negreta: true, color: VERMELL }], { mida: 11 });
+            doc.linia(x, y + 15, x + w, y + 15, LINIA, 0.6);
+        };
+
+        // Taula comparativa
+        espai(22 + 18 + r.opcions.length * 17);
+        titolRic('Comparativa de totes les opcions'); y += 22;
+        const cols = [{ t: 'Mitjà', w: 134, esq: true }, { t: 'Anada', w: 46 }, { t: 'Tornada', w: 48 }, { t: 'Distància', w: 50 }, { t: 'Al mes', w: 52 }, { t: "A l'any", w: 50 }, { t: "CO₂ a l'any", w: 64 }];
+        cols.push({ t: 'Combustible/dia', w: AMPLE - cols.reduce((s, c) => s + c.w, 0) });
+        const fila = (valors, { negretaPrimera = false, cap = false } = {}) => {
+            let x = M;
+            valors.forEach((v, i) => {
+                const c = cols[i], neg = cap || (negretaPrimera && i === 0);
+                // Si el text no cap a la columna, s'encongeix fins a 6 pt.
+                let mida = cap ? 7.5 : 8.5;
+                while (mida > 6 && ampladaText(v, mida, neg) > c.w - 8) mida -= 0.25;
+                const segs = trossosAmbSubindex([{ t: v, negreta: neg }], mida);
+                const w = segs.reduce((s, sg) => s + ampladaText(sg.t, sg.mida, neg), 0);
+                let cx = c.esq ? x + 4 : x + c.w - 4 - w;
+                const guany = !cap && /^-\S*.*€$/.test(v);
+                segs.forEach(sg => { doc.text(cx, y + 11.5, sg.t, { mida: sg.mida, negreta: neg || guany, color: cap ? SUAU : guany ? VERD : TEXT, rise: sg.rise }); cx += ampladaText(sg.t, sg.mida, neg || guany); });
+                x += c.w;
+            });
+        };
+        fila(cols.map(c => c.t), { cap: true }); y += 16; doc.linia(M, y, M + AMPLE, y, TEXT, 1.1);
+        r.opcions.forEach(x => {
+            fila([nomInforme(x), x.temps, x.tempsTornada || x.temps,
+                Number.isFinite(x.km) && x.km > 0 ? `${x.km.toFixed(1).replace('.', ',')} km` : '—',
+                eurMes(x.mes), eurAny(any(x)),
+                Number.isFinite(x.co2g) ? (x.co2g > 0 ? formatCO2(x.co2g * TRAJECTES_ANY) : '0 kg') : '—',
+                x.litres > 0 ? formatLitres(x.litres * 2) : '—'], { negretaPrimera: true });
+            y += 17; doc.linia(M, y, M + AMPLE, y, '#e3e7ea', 0.5);
+        });
+        y += 16;
+
+        // Gràfics
+        const colW = (AMPLE - 20) / 2;
+        espai(22 + r.opcions.length * 13 + 10);
+        const grafic = (x0, titolText, valors, format, color) => {
+            const yIni = y;
+            titolRic(titolText, x0, colW);
+            const max = Math.max(...valors.map(v => v.valor), 1), etiq = 112, barraMax = colW - etiq - 46;
+            valors.forEach((v, i) => {
+                const yy = yIni + 24 + i * 13;
+                let midaEt = 7.5;
+                while (midaEt > 5.5 && ampladaText(v.nom, midaEt, false) > etiq - 6) midaEt -= 0.25;
+                doc.text(x0, yy + 7, v.nom, { mida: midaEt, color: TEXT });
+                const w = Math.max(v.valor > 0 ? 1.5 : 0, Math.max(0, v.valor) / max * barraMax);
+                if (w > 0) doc.rect(x0 + etiq, yy, w, 7.5, color);
+                doc.text(x0 + etiq + w + 4, yy + 7, format(v.valor), { mida: 7.5, negreta: true });
+            });
+        };
+        grafic(M, "Emissions de CO₂ a l'any", r.opcions.filter(x => Number.isFinite(x.co2g)).map(x => ({ nom: nomInforme(x), valor: x.co2g * TRAJECTES_ANY })), v => v > 0 ? formatCO2(v).replace('₂', '2') : '0 kg', VERMELL);
+        grafic(M + colW + 20, "Despesa anual", r.opcions.filter(x => Number.isFinite(x.mes)).map(x => ({ nom: nomInforme(x), valor: any(x) })), eurAny, '#6b7680');
+        y += 24 + r.opcions.length * 13 + 12;
+
+        // Trajectes
+        const textTP = [...(tp.tarifa ? [[{ t: 'Abonament: ', negreta: true }, { t: tp.tarifa + '.' }]] : []), ...(tp.trams || []).flatMap(t => [
+            [{ t: `${t.etiqueta}: `, negreta: true }, { t: textRuta(t.segments) }],
+            ...(t.horari ? [[{ t: t.horari, color: SUAU }]] : [])
+        ])];
+        const peatges = Array.isArray(cotxe.ruta) ? cotxe.ruta.filter(s => s.tipus === 'PEATGE').map(s => s.etiqueta) : [];
+        const textCotxe = [
+            [{ t: 'Via principal: ', negreta: true }, { t: textRuta(cotxe.ruta) }],
+            [{ t: 'Temps: ', negreta: true }, { t: `${cotxe.temps} d'anada${cotxe.tempsTornada ? ` i ${cotxe.tempsTornada} de tornada` : ''}.` }],
+            ...(cotxe.nota ? [[{ t: `${cotxe.nota}.`, color: SUAU }]] : []),
+            ...(cotxe.acces ? [[{ t: 'Arribada: ', negreta: true }, { t: cotxe.acces.nom.charAt(0).toUpperCase() + cotxe.acces.nom.slice(1) + '.' }]] : []),
+            ...(peatges.length ? [[{ t: 'Peatges: ', negreta: true }, { t: peatges.join(', ') + '.' }]] : [])
+        ];
+        const altBloc = ps => ps.reduce((s, p) => s + paragraf(doc, 0, 0, colW, p, { mida: 9, dibuixar: false }) + 3, 0);
+        const hTraj = 22 + Math.max(altBloc(textTP), altBloc(textCotxe));
+        espai(hTraj);
+        const blocText = (x0, titolText, ps) => {
+            titolRic(titolText, x0, colW);
+            let yy = y + 22;
+            ps.forEach(p => { yy += paragraf(doc, x0, yy, colW, p, { mida: 9 }) + 3; });
+        };
+        blocText(M, 'El teu trajecte en transport públic', textTP.length ? textTP : [[{ t: 'No disponible.' }]]);
+        blocText(M + colW + 20, 'El teu trajecte en cotxe', textCotxe);
+        y += hTraj + 10;
+
+        // Recursos
+        if (RECURSOS_INFORME.length) {
+            const ps = RECURSOS_INFORME.map(x => [{ t: `${x.titol}. `, negreta: true }, { t: x.text },
+                ...(x.enllac ? [{ t: ' ' }, { t: 'Més informació', negreta: true, color: '#0050a0', url: x.enllac }] : [])]);
+            espai(22 + ps.reduce((s, p) => s + paragraf(doc, 0, 0, AMPLE, p, { mida: 9, dibuixar: false }) + 4, 0));
+            titolRic('Recursos per fer el canvi'); y += 22;
+            ps.forEach(p => { y += paragraf(doc, M, y, AMPLE, p, { mida: 9 }) + 4; });
+            y += 8;
+        }
+
+        // Metodologia
+        const metode = [{ t: "Les xifres anuals es calculen amb 11 mesos laborables (220 dies, anada i tornada). El transport públic es calcula amb el planificador de TMB per a l'horari indicat; el cotxe, amb TomTom i el trànsit habitual a aquesta hora (o OpenRouteService si TomTom no està disponible); la bicicleta i el trajecte a peu, amb OpenRouteService. En cotxe i moto, el combustible, el cost i el CO₂ surten d'un consum mitjà de 7,7 i 3,9 litres cada 100 km; en el cotxe compartit, el combustible i el CO₂ es reparteixen entre les persones que el comparteixen i el cost segueix les tarifes de Karos. El CO₂ del transport públic es calcula tram a tram amb factors mitjans per a cada mitjà. El temps que es mostra és la durada del viatge. La ruta es tria de manera aproximada, seguint la lògica dels desplaçaments diaris: trajectes ràpids, amb pocs transbords i caminades curtes. Totes les xifres són orientatives.", color: SUAU }];
+        espai(22 + paragraf(doc, 0, 0, AMPLE, metode, { mida: 7.5, dibuixar: false }));
+        titolRic("Com s'ha calculat"); y += 22;
+        y += paragraf(doc, M, y, AMPLE, metode, { mida: 7.5 });
+
+        // Si el contingut no cap a la pàgina (deixant lloc per al peu), es redueix tot
+        // proporcionalment des de la cantonada superior i es centra en horitzontal.
+        const disponible = doc.H - 2 * M - 26;
+        const escala = Math.min(1, disponible / (y - M));
+        if (escala < 1) {
+            const desplX = AMPLE * (1 - escala) / 2;
+            const X0 = M, Y0 = doc.H - M; // cantonada superior esquerra (coordenades PDF)
+            doc.c.unshift(`q ${escala.toFixed(4)} 0 0 ${escala.toFixed(4)} ${(X0 * (1 - escala) + desplX).toFixed(2)} ${(Y0 * (1 - escala)).toFixed(2)} cm`);
+            doc.c.push('Q');
+            doc.links.forEach(l => {
+                l.x = M + desplX + (l.x - M) * escala; l.y = M + (l.y - M) * escala;
+                l.w *= escala; l.h *= escala;
+            });
+        }
+
+        // Peu discret a cada pàgina.
+        const CORREU = 'jolivas.apms.ics@gencat.cat';
+        doc.pagines.forEach(pg => {
+            doc.c = pg.c; doc.links = pg.links;
+            const yp = doc.H - 34;
+            doc.linia(M, yp, M + AMPLE, yp, LINIA, 0.5);
+            paragraf(doc, M, yp + 3, AMPLE, [{ t: "Hospital Universitari de Bellvitge. Institut Català de la Salut. Eina orientativa per a professionals de l'hospital. No es desa cap adreça ni cap dada personal.", color: SUAU }], { mida: 6.5 });
+            const textAutor = 'Desenvolupat per Jaume Oliva Sala. ';
+            doc.text(M, yp + 20, textAutor, { mida: 6, color: '#a3adb5' });
+            const xc = M + ampladaText(textAutor, 6, false);
+            doc.text(xc, yp + 20, CORREU, { mida: 6, color: '#a3adb5' });
+            doc.enllac(xc, yp + 14, ampladaText(CORREU, 6, false), 8, `mailto:${CORREU}`);
+        });
+        return doc.bytes();
+    }
+
+    async function descarregarInforme(boto) {
+        if (!darrerResultat) return;
+        const textOriginal = boto.textContent;
+        boto.disabled = true; boto.textContent = 'Generant el PDF...';
+        try {
+            const bytes = await generarInformePDF(darrerResultat);
+            const d = new Date();
+            const nom = `Informe mobilitat HUB ${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.pdf`;
+            const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+            const a = document.createElement('a');
+            a.href = url; a.download = nom;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+        } catch (e) {
+            console.error('Error generant el PDF', e);
+            alert("No s'ha pogut generar l'informe. Torna-ho a provar.");
+        } finally {
+            boto.disabled = false; boto.textContent = textOriginal;
+        }
+    }
+
+    function dataLlarga(d) {
+        return d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function textRuta(ruta) {
+        if (!ruta || ruta.text) return ruta?.text || '—';
+        const parts = ruta.filter(s => s.tipus !== 'PEATGE').map(s => s.tipus === 'VIA' ? s.etiqueta : `${NOM_TIPUS[s.tipus] || ''} ${s.nom}`.trim());
+        return parts.join(' › ') || 'Vies urbanes';
+    }
+
+    // Canviar el nombre de persones del cotxe compartit reparteix el CO₂ i el
+    // combustible entre més gent. El preu per persona passatgera de Karos no canvia.
+    document.getElementById('resultats').addEventListener('change', e => {
+        if (!['ocupants-karos', 'rol-karos'].includes(e.target.id) || !darrerResultat) return;
+        const idFocus = e.target.id;
+        const n = Number(document.getElementById('ocupants-karos').value) || 2;
+        const condueix = document.getElementById('rol-karos').value === '1';
+        const k = darrerResultat.opcions.find(x => x.id === 'karos');
+        Object.assign(k, calcularKaros(darrerResultat.baseKaros, n, condueix));
+        const article = document.querySelector('article.opcio[data-id="karos"]');
+        article.outerHTML = pintarOpcio(k, darrerResultat.co2Cotxe);
+        const resum = document.getElementById('resum');
+        if (resum) resum.outerHTML = pintarResum(darrerResultat.opcions);
+        document.getElementById(idFocus)?.focus();
+    });
+
+    document.getElementById('resultats').addEventListener('click', e => {
+        const b = e.target.closest('#boto-informe');
+        if (b) descarregarInforme(b);
+    });
+</script>
+</body>
+</html>
