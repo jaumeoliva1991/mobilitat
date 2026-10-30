@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Que els cercadors no indexin ni mostrin aquesta pàgina -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <title>Mobilitat sostenible · Hospital Universitari de Bellvitge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
     /* ==============================================================
        COLORS CORPORATIUS
@@ -11,44 +17,56 @@
        Tota la interfície en depèn.
        ============================================================== */
     :root {
-        --corporatiu: #c8102e;        /* vermell principal (barres, botó, enllaços) */
-        --corporatiu-fosc: #9b0c23;   /* hover */
-        --corporatiu-suau: #fbeaec;   /* fons de realçats */
-        --peu: #2b2f33;               /* peu institucional */
-        --sostenible: #2f7d4f;        /* missatges d'estalvi */
-        --sostenible-suau: #e9f4ee;
+        /* Paleta de les stories: verd bosc → verd llima */
+        --verd-fosc: #0a4530;
+        --verd-mig: #14794b;
+        --verd-viu: #3fb56a;
+        --llima: #c9ef6a;
+        --tinta: #083626;
+        --degradat: linear-gradient(160deg, var(--verd-fosc) 0%, var(--verd-mig) 42%, var(--verd-viu) 78%, var(--llima) 100%);
 
-        --text: #1f2a33;
-        --text-suau: #5a6772;
-        --fons: #f5f5f5;
+        --corporatiu: #14794b;        /* accent (enllaços, focus de camps) */
+        --corporatiu-fosc: #0a4530;
+        --corporatiu-suau: #e6f4ea;
+        --peu: #083626;
+        --sostenible: #14794b;
+        --sostenible-suau: #eaf6e4;
+
+        --text: #12261d;
+        --text-suau: #4f6559;
+        --fons: #f3f7f1;
         --superficie: #ffffff;
-        --linia: #dddfe1;
+        --linia: #d8e3da;
+        --camp-vora: #a9bfb0;
         --avis-fons: #fff5dc;
         --avis-text: #6b4a00;
         --error-fons: #fdecec;
         --error-text: #9b1c1c;
-        --barra-co2: #c8102e;
-        --focus: #f2a900;
-        --radi: 4px;
+        --barra-co2: linear-gradient(90deg, var(--verd-mig), var(--verd-viu) 70%, var(--llima));
+        --focus: #0a4530;
+        --radi: 14px;
+        --radi-petit: 10px;
     }
     @media (prefers-color-scheme: dark) {
         :root {
-            --corporatiu: #ff5a6e;
-            --corporatiu-fosc: #e0435a;
-            --corporatiu-suau: #3a1a20;
-            --peu: #0b0f12;
-            --sostenible: #6cc794;
+            --corporatiu: #8fdc8a;
+            --corporatiu-fosc: #c9ef6a;
+            --corporatiu-suau: #17362a;
+            --peu: #061f16;
+            --sostenible: #8fdc8a;
             --sostenible-suau: #15301f;
-            --text: #eceff1;
-            --text-suau: #a9b2b9;
-            --fons: #121618;
-            --superficie: #1c2125;
-            --linia: #31383d;
+            --text: #e9f2ea;
+            --text-suau: #a6bcae;
+            --fons: #0c1a14;
+            --superficie: #13251c;
+            --linia: #24402f;
+            --camp-vora: #3a5a46;
             --avis-fons: #3a2e12;
             --avis-text: #f3d58a;
             --error-fons: #3d1a1a;
             --error-text: #ffb4b4;
-            --barra-co2: #ff5a6e;
+            --focus: #c9ef6a;
+            --degradat: linear-gradient(160deg, #06291c 0%, #0f5c3a 45%, #2a8f52 82%, #8fc44f 100%);
         }
     }
 
@@ -56,37 +74,59 @@
     html { color-scheme: light dark; }
     body {
         margin: 0; background: var(--fons); color: var(--text);
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family: "Bricolage Grotesque", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 16px; line-height: 1.5;
     }
     .contenidor { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 
-    /* Barra institucional */
-    .barra { background: var(--superficie); color: var(--text); border-bottom: 4px solid var(--corporatiu); }
-    .barra .contenidor { display: flex; align-items: center; gap: 18px; min-height: 76px; }
+    /* Capçalera: el mateix degradat que les stories */
+    .barra {
+        position: relative; overflow: hidden; color: #fff;
+        background:
+            radial-gradient(circle at 92% 8%, rgba(201, 239, 106, 0.32), rgba(201, 239, 106, 0) 45%),
+            var(--degradat);
+        padding-bottom: 72px;
+    }
+    .barra .contenidor { position: relative; }
+    .barra-superior { display: flex; align-items: center; gap: 18px; min-height: 84px; }
     .logo { display: flex; align-items: center; text-decoration: none; }
     .logo img { height: 46px; width: auto; display: block; }
     .logo img.logo-blanc { filter: brightness(0) invert(1); } /* capa que el fa blanc */
-    .logo-text { font-weight: 700; font-size: 1.15rem; line-height: 1.15; color: var(--corporatiu); }
-    .logo-text span { display: block; font-weight: 400; color: var(--text-suau); font-size: 0.85rem; }
-    .nom-eina { padding-left: 18px; border-left: 1px solid var(--linia); font-size: 1rem; font-weight: 700; color: var(--text); }
-    .area { margin-left: auto; font-size: 0.85rem; color: var(--text-suau); }
+    .logo-text { font-weight: 800; font-size: 1.15rem; line-height: 1.15; color: #fff; }
+    .logo-text span { display: block; font-weight: 500; color: rgba(255,255,255,.8); font-size: 0.85rem; }
+    .nom-eina { padding-left: 18px; border-left: 1px solid rgba(255,255,255,.35); font-size: 1rem; font-weight: 700; color: #fff; }
+    .area { margin-left: auto; font-size: 0.85rem; color: rgba(255,255,255,.8); }
 
-    /* Capçalera de pàgina */
-    .titol-pagina { padding: 22px 0 26px; }
-    h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; color: var(--text); font-weight: 700; }
-    .subtitol { margin: 8px 0 0; max-width: 65ch; color: var(--text-suau); }
+    /* Icona gegant i subtil, com a les stories */
+    /* Fons en moviment: tots els mitjans de transport desfilant lentament en dos carrils */
+    .marca-fons { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .vehicle { position: absolute; left: 0; top: var(--top); width: var(--mida); height: var(--mida); color: #fff; opacity: var(--opacitat);
+        animation: circular var(--durada) linear infinite; animation-delay: var(--retard); will-change: transform; }
+    .vehicle.torna { animation-name: circular-torna; }
+    .vehicle.torna svg { transform: scaleX(-1); } /* mira cap a on va */
+    .vehicle svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    @keyframes circular { from { transform: translateX(calc(-1 * var(--mida))); } to { transform: translateX(calc(var(--recorregut) - var(--mida))); } }
+    @keyframes circular-torna { from { transform: translateX(calc(var(--recorregut) - var(--mida))); } to { transform: translateX(calc(-1 * var(--mida))); } }
+    @media (prefers-reduced-motion: reduce) {
+        .vehicle { animation: none; transform: translateX(var(--quiet)); }
+    }
+
+    .titol-pagina { position: relative; padding: 28px 0 8px; max-width: 640px; }
+    h1 { margin: 0; font-size: clamp(2.3rem, 6vw, 4rem); line-height: 0.98; letter-spacing: -0.02em; color: #fff; font-weight: 800; }
+    .subtitol { margin: 16px 0 0; max-width: 52ch; color: rgba(255,255,255,.88); font-size: 1.05rem; }
+    .etiqueta-hub { display: inline-block; margin-top: 22px; padding: 9px 20px; border-radius: 999px; background: var(--tinta); color: var(--llima); font-weight: 800; font-size: 1rem; letter-spacing: 0.01em; max-width: 100%; overflow-wrap: anywhere; }
 
     /* Formulari */
     .formulari {
-        background: var(--superficie); border: 1px solid var(--linia); border-top: 4px solid var(--corporatiu);
-        border-radius: var(--radi); padding: 20px;
+        position: relative; z-index: 2; margin-top: -48px;
+        background: var(--superficie); border: 1px solid var(--linia);
+        border-radius: 20px; padding: 22px; box-shadow: 0 18px 40px -18px rgba(8, 54, 38, 0.35);
         display: grid; grid-template-columns: 1fr 140px 140px auto; gap: 14px; align-items: end;
     }
     .camp label { display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; }
     .camp input {
         width: 100%; font: inherit; color: var(--text); background: var(--superficie);
-        padding: 11px 12px; border: 1px solid #a9b4bd; border-radius: var(--radi);
+        padding: 11px 14px; border: 1px solid var(--camp-vora); border-radius: var(--radi-petit);
     }
     .camp input:focus { outline: none; border-color: var(--corporatiu); box-shadow: 0 0 0 3px color-mix(in srgb, var(--corporatiu) 22%, transparent); }
     .camp-adreca { position: relative; }
@@ -95,19 +135,19 @@
     .suggeriments {
         position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 2px);
         margin: 0; padding: 4px 0; list-style: none;
-        background: var(--superficie); border: 1px solid var(--linia); border-radius: var(--radi);
-        box-shadow: 0 8px 20px rgba(0, 30, 50, 0.12); max-height: 320px; overflow-y: auto;
+        background: var(--superficie); border: 1px solid var(--linia); border-radius: var(--radi-petit);
+        box-shadow: 0 12px 28px rgba(8, 54, 38, 0.16); max-height: 320px; overflow-y: auto;
     }
     .suggeriments[hidden] { display: none; }
     .suggeriments li { padding: 9px 12px; cursor: pointer; border-left: 3px solid transparent; }
-    .suggeriments li[aria-selected="true"], .suggeriments li:hover { background: var(--corporatiu-suau); border-left-color: var(--corporatiu); }
+    .suggeriments li[aria-selected="true"], .suggeriments li:hover { background: var(--corporatiu-suau); border-left-color: var(--verd-viu); }
     .sug-principal { display: block; font-weight: 700; }
     .sug-secundari { display: block; font-size: 0.85rem; color: var(--text-suau); }
     button.calcular {
-        font: inherit; font-weight: 700; background: var(--corporatiu); color: #fff;
-        border: none; border-radius: var(--radi); padding: 12px 22px; cursor: pointer; white-space: nowrap;
+        font: inherit; font-weight: 800; background: var(--tinta); color: var(--llima);
+        border: none; border-radius: 999px; padding: 12px 26px; cursor: pointer; white-space: nowrap;
     }
-    button.calcular:hover { background: var(--corporatiu-fosc); }
+    button.calcular:hover { background: var(--verd-fosc); }
     button.calcular:disabled { opacity: 0.6; cursor: wait; }
     button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
@@ -118,21 +158,23 @@
     .avis { background: var(--avis-fons); color: var(--avis-text); }
     .error { background: var(--error-fons); color: var(--error-text); }
 
-    .resum-co2 { background: var(--sostenible-suau); border-left: 4px solid var(--sostenible); border-radius: var(--radi); padding: 16px 20px; }
+    .resum-co2 { position: relative; overflow: hidden; color: #fff; background: radial-gradient(circle at 95% 0%, rgba(201,239,106,.3), rgba(201,239,106,0) 50%), var(--degradat); border-radius: 20px; padding: 22px 24px; }
+    .resum-co2 .resum-llista strong, .resum-co2 strong { color: #fff; }
     .resum-co2 p { margin: 0; max-width: 72ch; }
     .resum-llista { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     .resum-llista strong { color: var(--text); }
-    .resum-xifra { font-size: 1.4rem; font-weight: 700; color: var(--sostenible); line-height: 1.25; margin-bottom: 4px !important; }
+    .resum-xifra { font-size: clamp(1.5rem, 3.4vw, 2.1rem); font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 8px !important; }
 
     .opcio {
         background: var(--superficie); border: 1px solid var(--linia); border-radius: var(--radi);
         padding: 16px 18px; display: grid; grid-template-columns: 210px 1fr auto; gap: 16px; align-items: center;
     }
     .opcio-mode { display: flex; gap: 12px; align-items: center; }
-    .icona { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--corporatiu-suau); color: var(--corporatiu); }
-    .icona svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .opcio h2 { font-size: 1rem; margin: 0; line-height: 1.3; }
-    .eco { display: inline-block; white-space: nowrap; margin-top: 3px; font-size: 0.75rem; font-weight: 700; color: var(--sostenible); }
+    .icona { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--corporatiu-suau); color: var(--verd-mig); }
+    @media (prefers-color-scheme: dark) { .icona { color: var(--llima); } }
+    .icona svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .opcio h2 { font-size: 1.05rem; font-weight: 800; margin: 0; line-height: 1.25; }
+    .eco { display: inline-block; white-space: nowrap; margin-top: 5px; padding: 2px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; color: var(--llima); background: var(--tinta); }
 
     .ruta, .trajecte-sentit { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
     .trajectes { display: grid; gap: 10px; }
@@ -140,9 +182,9 @@
     .sentit { flex-basis: 100%; font-size: 0.75rem; font-weight: 700; color: var(--text-suau); }
     .ruta .fletxa, .trajecte-sentit .fletxa { color: var(--text-suau); font-size: 0.85rem; }
     .text { color: var(--text-suau); font-size: 0.92rem; }
-    .placa { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; padding: 3px 8px; border-radius: 3px; line-height: 1.4; border: 1px solid transparent; }
+    .placa { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; line-height: 1.4; border: 1px solid transparent; }
     .placa-via-rapida { background: #0050a0; color: #fff; }
-    .placa-via { background: transparent; color: var(--text); border-color: #a9b4bd; }
+    .placa-via { background: transparent; color: var(--text); border-color: var(--camp-vora); }
     .placa-peatge { background: var(--avis-fons); color: var(--avis-text); }
     .placa-tp { color: #fff; }
     .placa-tp small { font-weight: 400; opacity: 0.9; font-size: 0.75rem; }
@@ -156,22 +198,22 @@
     .detall li small { display: block; color: var(--text-suau); }
     .xifres { display: grid; grid-template-columns: repeat(4, minmax(72px, auto)); gap: 4px 20px; margin: 0; text-align: right; }
     .xifres dt { font-size: 0.75rem; color: var(--text-suau); }
-    .xifres dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .xifres dd { margin: 0; font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
     .xifres dd.guany { color: var(--sostenible); } /* imports negatius: hi surts guanyant */
     .xifres dd small { display: block; font-weight: 400; font-size: 0.78rem; color: var(--text-suau); }
 
     .co2 { grid-column: 1 / -1; display: grid; grid-template-columns: 210px 1fr; gap: 16px; align-items: center; padding-top: 12px; border-top: 1px solid var(--linia); }
-    .co2-barra { height: 6px; background: var(--fons); border-radius: 3px; overflow: hidden; }
-    .co2-barra span { display: block; height: 100%; background: var(--barra-co2); }
+    .co2-barra { height: 8px; background: var(--fons); border-radius: 999px; overflow: hidden; }
+    .co2-barra span { display: block; height: 100%; background: var(--barra-co2); border-radius: 999px; }
     .co2-text { margin: 0; font-size: 0.88rem; color: var(--text-suau); }
     .co2-text strong { color: var(--text); }
     .co2-estalvi { display: inline-block; margin-left: 6px; color: var(--sostenible); font-weight: 700; }
 
-    .notes { margin-top: 24px; font-size: 0.85rem; color: var(--text-suau); display: grid; gap: 8px; max-width: 78ch; }
+    .notes { margin-top: 24px; font-size: 0.85rem; color: var(--text-suau); display: grid; gap: 8px; }
     .notes p { margin: 0; }
 
     /* Peu institucional */
-    .peu { margin-top: 40px; background: var(--peu); color: #d9dde0; font-size: 0.85rem; border-top: 4px solid var(--corporatiu); }
+    .peu { margin-top: 48px; background: var(--peu); color: #cfe3d4; font-size: 0.85rem; border-top: 6px solid var(--llima); }
     .peu .contenidor { padding-top: 22px; padding-bottom: 22px; display: grid; gap: 4px; }
     .peu strong { color: #fff; }
     .peu p { margin: 0; }
@@ -183,9 +225,68 @@
     .enllac-extern { flex-basis: 100%; font-size: 0.85rem; font-weight: 700; color: var(--corporatiu); text-decoration: none; margin-top: 2px; }
     .enllac-extern:hover { text-decoration: underline; }
     .ocupants { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.8rem; color: var(--text-suau); }
-    .ocupants select { font: inherit; font-weight: 700; color: var(--text); background: var(--superficie); border: 1px solid #a9b4bd; border-radius: var(--radi); padding: 2px 6px; }
+    .ocupants select { font: inherit; font-weight: 700; color: var(--text); background: var(--superficie); border: 1px solid var(--camp-vora); border-radius: 999px; padding: 2px 8px; }
     .accio-informe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px; }
     .accio-informe span { font-size: 0.85rem; color: var(--text-suau); }
+
+    /* El cotxe compartit té més detall: una mica més gran dins del cercle */
+    article.opcio[data-id="karos"] .icona svg { width: 26px; height: 26px; }
+
+    /* Compartir a xarxes */
+    .compartir { margin-top: 16px; background: var(--superficie); border: 1px solid var(--linia); border-top: 6px solid var(--verd-viu); border-radius: 20px; padding: 22px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start; }
+    .compartir[hidden] { display: none; }
+    .compartir h2 { margin: 0; font-size: 1.4rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
+    .compartir-intro { margin: 4px 0 16px; color: var(--text-suau); max-width: 60ch; }
+    .compartir fieldset { border: 0; margin: 0 0 16px; padding: 0; min-width: 0; }
+    .compartir legend { font-weight: 700; font-size: 0.88rem; margin-bottom: 8px; padding: 0; }
+    .xips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .xip { position: relative; }
+    .xip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+    .xip span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px; border: 1px solid var(--linia); border-radius: 999px; font-size: 0.9rem; font-weight: 700; color: var(--text); background: var(--superficie); line-height: 1.2; }
+    .xip svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    .xip small { font-weight: 400; color: var(--text-suau); }
+    .xip input:checked + span { background: var(--tinta); border-color: var(--tinta); color: var(--llima); }
+    .xip input:checked + span small { color: rgba(201,239,106,.8); }
+    .xip input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .xip.format span { padding-left: 14px; }
+    .frase-compartir { margin: 0 0 16px; padding: 14px 16px; background: var(--sostenible-suau); border-radius: var(--radi); font-size: 0.95rem; max-width: 60ch; }
+    .botons-compartir { display: flex; flex-wrap: wrap; gap: 8px; }
+    .boto-xarxa { font: inherit; font-size: 0.9rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--linia); background: var(--superficie); color: var(--text); text-decoration: none; cursor: pointer; }
+    .boto-xarxa:hover { border-color: var(--sostenible); color: var(--sostenible); }
+    .boto-xarxa svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
+    .icones-xarxes { display: inline-flex; gap: 4px; }
+    .boto-principal { background: var(--tinta); border-color: var(--tinta); color: var(--llima); font-weight: 800; }
+    .boto-principal:hover { color: var(--llima); border-color: var(--verd-fosc); background: var(--verd-fosc); }
+    .pista-compartir { margin: 12px 0 0; font-size: 0.82rem; color: var(--text-suau); max-width: 60ch; }
+    .previsualitzacio { display: grid; grid-template-columns: 160px 160px; gap: 14px; align-items: start; }
+    .previsualitzacio figure { margin: 0; }
+    .previsualitzacio img { display: block; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 8px 24px rgba(10, 60, 40, .22); background: #14794b; }
+    #imatge-story { aspect-ratio: 9 / 16; }
+    #imatge-quadrat { aspect-ratio: 1; }
+    .previsualitzacio figcaption { margin-top: 6px; font-size: 0.75rem; color: var(--text-suau); text-align: center; }
+    .avis-copiat { font-size: 0.82rem; color: var(--sostenible); font-weight: 700; min-height: 1.2em; margin: 8px 0 0; }
+    .opcio-compartir { display: flex; justify-content: flex-end; }
+    article.opcio > .opcio-compartir { grid-column: 1 / -1; }
+    .co2:has(.opcio-compartir) { grid-template-columns: 210px 1fr auto; }
+    .boto-petit { gap: 5px; padding: 3px 9px; font-size: 0.78rem; line-height: 1.4; color: var(--sostenible); border-color: color-mix(in srgb, var(--sostenible) 45%, var(--linia)); }
+    .boto-petit svg { width: 13px; height: 13px; }
+    .compartir { scroll-margin-top: 16px; }
+    .compartir.destacat { animation: destacar 1.4s ease-out; }
+    @keyframes destacar { from { box-shadow: 0 0 0 6px color-mix(in srgb, var(--sostenible) 35%, transparent); } to { box-shadow: 0 0 0 0 transparent; } }
+    @media (prefers-reduced-motion: reduce) { .compartir.destacat { animation: none; } }
+    /* Mode fosc: els botons s'inverteixen (llima amb text verd) perquè destaquin */
+    @media (prefers-color-scheme: dark) {
+        button.calcular, .boto-principal, .xip input:checked + span { background: var(--llima); border-color: var(--llima); color: var(--tinta); }
+        button.calcular:hover, .boto-principal:hover { background: #d9f58f; color: var(--tinta); }
+        .xip input:checked + span small { color: rgba(8,54,38,.75); }
+        .eco { background: var(--llima); color: var(--tinta); }
+    }
+    @media (max-width: 820px) {
+        .compartir { grid-template-columns: 1fr; }
+        .co2:has(.opcio-compartir) { grid-template-columns: 1fr auto; }
+        .co2:has(.opcio-compartir) .co2-barra { grid-column: 1 / -1; }
+        .previsualitzacio { grid-template-columns: repeat(2, minmax(0, 150px)); justify-content: center; order: -1; }
+    }
     @media (max-width: 820px) {
         .area { display: none; }
         .formulari { grid-template-columns: 1fr 1fr; }
@@ -195,7 +296,8 @@
         .co2 { grid-template-columns: 1fr; gap: 6px; }
     }
     @media (max-width: 520px) {
-        .barra .contenidor { min-height: 64px; gap: 12px; }
+        .barra-superior { min-height: 68px; gap: 12px; }
+        .barra { padding-bottom: 64px; }
         .logo img { height: 36px; }
         .nom-eina { padding-left: 12px; font-size: 0.9rem; }
         .formulari { padding: 16px; }
@@ -204,19 +306,23 @@
 </head>
 <body>
 <header class="barra">
+    <div class="marca-fons" id="marca-fons" aria-hidden="true"></div>
     <div class="contenidor">
-        <a class="logo" id="logo-capcalera" href="https://bellvitgehospital.cat/ca" aria-label="Hospital Universitari de Bellvitge">
-            <span class="logo-text">Bellvitge<span>Hospital Universitari</span></span>
-        </a>
-        <span class="nom-eina">Mobilitat sostenible</span>
+        <div class="barra-superior">
+            <a class="logo" id="logo-capcalera" href="https://bellvitgehospital.cat/ca" aria-label="Hospital Universitari de Bellvitge">
+                <span class="logo-text">Bellvitge<span>Hospital Universitari</span></span>
+            </a>
+            <span class="nom-eina">Mobilitat sostenible</span>
+        </div>
+        <div class="titol-pagina">
+            <h1>Com vens a treballar?</h1>
+            <p class="subtitol">Compara el temps, el cost i les emissions de cada mitjà de transport entre casa teva i l'hospital, segons el teu horari.</p>
+            <span class="etiqueta-hub">#BellvitgeMobilitatSostenible</span>
+        </div>
     </div>
 </header>
 
 <div class="contenidor">
-    <div class="titol-pagina">
-        <h1>Com vens a treballar?</h1>
-        <p class="subtitol">Compara el temps, el cost i les emissions de cada mitjà de transport entre casa teva i l'hospital, segons el teu horari.</p>
-    </div>
 <main>
     <form class="formulari" id="formulari" autocomplete="off" novalidate>
         <div class="camp camp-adreca">
@@ -353,7 +459,7 @@
     const URL_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/bb/Hospital_Universitari_de_Bellvitge.svg";
     // Vermell corporatiu. L'app el llegeix del logotip en carregar-se i l'escriu a
     // la consola: copia'l aquí perquè quedi fix encara que el logotip no carregui.
-    let COLOR_CORPORATIU = "#c8102e";
+    let COLOR_CORPORATIU = "#14794b"; // verd de les stories (també als accents del PDF)
 
     let promesaSVG = null;
     const textLogoSVG = () => promesaSVG ??= fetchAmbTemps(URL_LOGO, {}, 5000).then(r => r.ok ? r.text() : null).catch(() => null);
@@ -413,20 +519,47 @@
         img.src = src; // si no carrega, es queda el text
     }
 
+    // Icona gegant de la bicicleta al fons de la capçalera, com a les stories.
+    // Dos carrils en sentits contraris, amb vehicles de la mateixa mida.
+    // Tots els d'un carril van a la mateixa velocitat i amb la mateixa separació,
+    // així no s'atrapen ni se solapen mai. Si la pantalla és estreta, el recorregut
+    // s'allarga (part fora de pantalla) perquè sempre hi hagi espai entre vehicles.
+    // Els retards negatius fan que, en obrir la pàgina, ja estiguin repartits.
+    function pintarVehicles() {
+        const fons = document.getElementById('marca-fons');
+        if (!fons) return;
+        const ample = fons.clientWidth || window.innerWidth;
+        const mida = ample < 520 ? 96 : 170;          // px, igual als dos carrils
+        const velocitat = ample < 520 ? 9 : 16;       // px per segon: molt lent
+        const carrils = [
+            { top: '8%',  torna: false, mitjans: ['bici', 'tp', 'peu', 'karos'] },
+            { top: '50%', torna: true,  mitjans: ['tp', 'cotxe', 'bici', 'moto', 'peu'] }
+        ];
+        fons.innerHTML = carrils.flatMap((c, ic) => {
+            const n = c.mitjans.length;
+            const recorregut = Math.max(ample + mida, n * mida * 1.9);
+            const durada = recorregut / velocitat;
+            return c.mitjans.map((id, i) => {
+                const retard = -durada * ((i + 0.5 * ic) / n);
+                const quiet = Math.round(((i + 0.5 * ic) / n) * ample);
+                return `<span class="vehicle${c.torna ? ' torna' : ''}" style="--top:${c.top};--mida:${mida}px;--recorregut:${Math.round(recorregut)}px;--durada:${durada.toFixed(1)}s;--retard:${retard.toFixed(1)}s;--opacitat:${(0.06 + (i % 3) * 0.02).toFixed(2)};--quiet:${quiet}px"><svg viewBox="0 0 24 24">${ICONES[id]}</svg></span>`;
+            });
+        }).join('');
+    }
+    queueMicrotask(() => { try { pintarVehicles(); } catch { /* sense fons animat */ } });
+    let ampleVehicles = window.innerWidth, esperaVehicles;
+    window.addEventListener('resize', () => {
+        if (Math.abs(window.innerWidth - ampleVehicles) < 40) return; // la barra del mòbil no compta
+        ampleVehicles = window.innerWidth;
+        clearTimeout(esperaVehicles);
+        esperaVehicles = setTimeout(() => { try { pintarVehicles(); } catch {} }, 250);
+    });
+
     (async function iniciarLogo() {
-        // En mode clar, el logotip es pot mostrar de seguida amb els colors originals.
-        if (!foscaActiva()) posarLogo(URL_LOGO, false);
+        // La capçalera és verda: el logotip sempre en blanc, com a les stories.
+        posarLogo(URL_LOGO, true); // primer, capa blanca amb filtre
         const svg = await textLogoSVG();
-        const c = svg && colorDelLogo(svg);
-        if (c) {
-            aplicarColorCorporatiu(c);
-            console.log(`Color corporatiu detectat al logotip: ${c}. Copia'l a COLOR_CORPORATIU perquè quedi fix.`);
-        }
-        if (!foscaActiva()) return;
-        // Mode fosc: logotip en blanc sobre el fons fosc de la barra.
-        const fons = getComputedStyle(document.documentElement).getPropertyValue('--superficie').trim() || '#1c2125';
-        if (svg) posarLogo(URL.createObjectURL(new Blob([versioBlanca(svg, fons)], { type: 'image/svg+xml' })), false);
-        else posarLogo(URL_LOGO, true); // sense accés al codi del SVG: capa blanca amb filtre
+        if (svg) posarLogo(URL.createObjectURL(new Blob([versioBlanca(svg, '#14794b')], { type: 'image/svg+xml' })), false);
     })();
 
     let evitarPeatges = false; // casella "Evitar peatges" del formulari
@@ -739,8 +872,10 @@
             html += pintarResum(opcions);
             html += opcions.map(o => pintarOpcio(o, co2Cotxe)).join('');
             html += `<div class="accio-informe"><button type="button" class="calcular" id="boto-informe">Descarregar informe (PDF)</button><span>Un document A4 amb la comparativa, els gràfics i els teus trajectes.</span></div>`;
+            html += '<section class="compartir" id="compartir" aria-labelledby="titol-compartir" hidden></section>';
             resultatsDiv.innerHTML = html;
             darrerResultat = { adreca: origen.etiqueta || text, horaEntrada, horaSortida, opcions, co2Cotxe, litresCotxe: cotxe.litres || 0, baseKaros };
+            iniciarCompartir();
         } catch (error) {
             console.error(error);
             const missatge = esErrorDeXarxa(error)
@@ -756,12 +891,12 @@
     // PRESENTACIÓ
     // ------------------------------------------------------------------
     const ICONES = {
-        tp: '<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 10h16M8 17v3M16 17v3"/><path d="M8 13.5h.01M16 13.5h.01"/>',
-        cotxe: '<path d="M5 16H3v-3l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5v3h-2"/><path d="M3 13h18"/><circle cx="7.5" cy="16.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/><path d="M9.5 16.5h5"/>',
-        moto: '<circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><path d="M5 16l4-6h5l3 6"/><path d="M14 10l2-4h3"/>',
-        karos: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+        tp: '<rect x="4.5" y="2.5" width="15" height="17" rx="3.5"/><path d="M8.5 5.3h7"/><rect x="7" y="8" width="10" height="5" rx="1"/><path d="M12 8v5"/><circle cx="8.5" cy="16.2" r="0.9"/><circle cx="15.5" cy="16.2" r="0.9"/><path d="M8 19.5l-2 2.5M16 19.5l2 2.5"/>', // metro de cara
+        cotxe: '<path d="m21 9-2 2-1.5-3.7A2 2 0 0 0 15.6 6H8.4a2 2 0 0 0-1.9 1.3L5 11 3 9"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M7 14h.01M17 14h.01"/><path d="M4.8 17v2.2a.8.8 0 0 0 .8.8h1.2a.8.8 0 0 0 .8-.8V17M16.4 17v2.2a.8.8 0 0 0 .8.8h1.2a.8.8 0 0 0 .8-.8V17"/>', // cotxe de cara
+        moto: '<circle cx="5" cy="16" r="3"/><circle cx="19" cy="16" r="3"/><path d="M7.5 14h5l4-4H6m1.5 4 4-4"/><path d="M13 6h2l1.5 3 2 4"/>', // moto de perfil
+        karos: '<g class="cotxe-petit" transform="translate(4.56 7.78) scale(0.62)" stroke-width="2.42"><path d="m21 9-2 2-1.5-3.7A2 2 0 0 0 15.6 6H8.4a2 2 0 0 0-1.9 1.3L5 11 3 9"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M7 14h.01M17 14h.01"/><path d="M4.8 17v2.2a.8.8 0 0 0 .8.8h1.2a.8.8 0 0 0 .8-.8V17M16.4 17v2.2a.8.8 0 0 0 .8.8h1.2a.8.8 0 0 0 .8-.8V17"/></g><circle cx="8.6" cy="4.2" r="1.7"/><circle cx="15.4" cy="4.2" r="1.7"/><path d="M5.6 9.8a3 3 0 0 1 6 0M12.4 9.8a3 3 0 0 1 6 0"/>', // cotxe compartit
         bici: '<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
-        peu: '<circle cx="13" cy="4" r="2"/><path d="M9 20l2-6 3 3v3M8 12l3-4 3 3 3 1M11 8l-1 5"/>'
+        peu: '<circle cx="13.5" cy="4.2" r="1.8"/><path d="M12.6 7.8 11.2 13.8 8.8 20M11.2 13.8l2.8 2.7.6 3.5M7.8 12.2 10.2 9l2.2-.8 2.2 2.6 2.4.8"/>' // vianant
     };
 
     const COLORS_METRO = { L1: '#e2231a', L2: '#9b3e98', L3: '#3ba638', L4: '#f7b500', L5: '#0078bf', L9: '#f18a00', L9N: '#f18a00', L9S: '#f18a00', L10: '#00a6d6', L10N: '#00a6d6', L10S: '#00a6d6', L11: '#89b94c', FM: '#004c38' };
@@ -2103,12 +2238,453 @@
         article.outerHTML = pintarOpcio(k, darrerResultat.co2Cotxe);
         const resum = document.getElementById('resum');
         if (resum) resum.outerHTML = pintarResum(darrerResultat.opcions);
+        actualitzarCompartir(); // l'estalvi del cotxe compartit depèn de les persones
         document.getElementById(idFocus)?.focus();
     });
 
     document.getElementById('resultats').addEventListener('click', e => {
         const b = e.target.closest('#boto-informe');
         if (b) descarregarInforme(b);
+    });
+
+    // ------------------------------------------------------------------
+    // COMPARTIR A XARXES (stories, WhatsApp, X...)
+    // ------------------------------------------------------------------
+    // Adreça pública de l'eina, per afegir-la al text que es comparteix.
+    // Al text va amb https://; a les imatges, sense (WEB_IMATGE).
+    const URL_EINA = 'https://bellvitgehospital.cat/mobilitat';
+    const WEB_IMATGE = URL_EINA.replace(/^https?:\/\//, '');
+    const HASHTAG = 'BellvitgeMobilitatSostenible';
+    // CO2 que absorbeix un arbre adult en un any (valor orientatiu, ~22 kg).
+    const KG_CO2_ARBRE_ANY = 22;
+    const FONT_IMATGE = '"Bricolage Grotesque", "Helvetica Neue", Helvetica, Arial, sans-serif';
+    const VERDS = { fosc: '#0a4530', mig: '#14794b', viu: '#3fb56a', llima: '#c9ef6a', tinta: '#083626' };
+
+    const ICONA_PATINET = '<circle cx="5.5" cy="18" r="2.5"/><circle cx="18.5" cy="18" r="2.5"/><path d="M8 18h8"/><path d="M17.6 15.7L14.5 4.5"/><path d="M12 4.5h4.5"/>';
+    const MODES_COMPARTIR = [
+        { id: 'tp', opcio: 'tp', nom: 'Transport públic', frase: 'Vaig a treballar en transport públic', icona: () => ICONES.tp },
+        { id: 'karos', opcio: 'karos', nom: 'Cotxe compartit', frase: 'Comparteixo cotxe per anar a treballar', icona: () => ICONES.karos },
+        { id: 'bici', opcio: 'bici', nom: 'Bicicleta', frase: 'Vaig a treballar en bicicleta', icona: () => ICONES.bici },
+        { id: 'patinet', opcio: 'bici', nom: 'Patinet', frase: 'Vaig a treballar en patinet', icona: () => ICONA_PATINET, marcaX: 0.92 },
+        { id: 'peu', opcio: 'peu', nom: 'A peu', frase: 'Vaig a treballar a peu', icona: () => ICONES.peu }
+    ];
+    const LOGOS_XARXES = {
+        compartir: '<path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1Z"/>',
+        whatsapp: '<path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.3Z"/>',
+        x: '<path d="M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z"/>',
+        instagram: '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3"/>',
+        telegram: '<path d="M21.5 3.6 2.9 10.8c-1.3.5-1.3 1.2-.2 1.6l4.8 1.5 1.8 5.6c.2.6.4.8.8.8s.6-.2.9-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.8c.3-1.3-.5-1.9-1.4-1.5ZM9.6 14.2l8.6-5.4c.4-.2.7 0 .4.2l-7.3 6.6-.3 3.1-1.4-4.5Z"/>',
+        baixar: '<path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        imatge: '<path d="M8 4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Zm-1 13h10l-3.5-4.5-2.5 3-1.5-2L7 17Z"/>',
+        text: '<path d="M9 3h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V5a2 2 0 0 1 2-2Zm0 4h6a2 2 0 0 1 2 2v6h2V5H9v2Zm-4 2v10h10V9H5Z"/>'
+    };
+    // Mida de la imatge segons on es comparteix.
+    const DESTINS = {
+        instagram: { format: 'story', nom: 'Instagram Stories' },
+        whatsapp: { format: 'quadrat', nom: 'WhatsApp', web: t => `https://wa.me/?text=${encodeURIComponent(t)}` },
+        x: { format: 'quadrat', nom: 'X', web: t => `https://x.com/intent/post?text=${encodeURIComponent(t)}` },
+        quadrat: { format: 'quadrat', nom: 'WhatsApp, X, Telegram' }, // només al mòbil
+        telegram: { format: 'quadrat', nom: 'Telegram', web: t => `https://t.me/share/url?url=${encodeURIComponent(urlEina() || ' ')}&text=${encodeURIComponent(t.replace(' ' + urlEina(), ''))}` } // Telegram ja hi posa l'enllaç
+    };
+    const estatCompartir = { mode: null, imatges: {}, generacio: 0 };
+
+    // Estalvi anual de CO2 en grams respecte a venir sol en cotxe.
+    function estalviAnual(modeId) {
+        const m = MODES_COMPARTIR.find(x => x.id === modeId);
+        const o = darrerResultat?.opcions.find(x => x.id === m.opcio);
+        const base = darrerResultat?.co2Cotxe;
+        if (!o || !(base > 0) || !Number.isFinite(o.co2g)) return NaN;
+        return (base - o.co2g) * TRAJECTES_ANY;
+    }
+
+    // Xifra separada en número i unitat per a la imatge: "1,2" + "tones".
+    function xifraCO2(g) {
+        if (g >= 1e6) {
+            const t = g / 1e6;
+            const num = coma(t, t < 10 ? 1 : 0).replace(/,0$/, '');
+            return { num, unitat: num === '1' ? 'tona' : 'tones' };
+        }
+        return { num: String(Math.max(1, Math.round(g / 1000))), unitat: 'kg' };
+    }
+    // "de" o "d'" davant del número (un, onze): "d'1,2 tones", "de 800 kg".
+    const preposicio = num => /^(1|11)(,|$)/.test(num) ? "d'" : 'de ';
+    const arbres = g => Math.max(1, Math.round(g / 1000 / KG_CO2_ARBRE_ANY));
+
+    function urlEina() {
+        if (URL_EINA) return URL_EINA;
+        return /^https?:$/.test(location.protocol) ? location.origin + location.pathname : '';
+    }
+
+    function textCompartir(modeId) {
+        const m = MODES_COMPARTIR.find(x => x.id === modeId);
+        const x = xifraCO2(estalviAnual(modeId));
+        return `${m.frase} i evito l'emissió ${preposicio(x.num)}${x.num} ${x.unitat} de CO₂ a l'any. I tu, quina emissió de CO₂ evites? #${HASHTAG}`;
+    }
+    const textAmbEnllac = modeId => [textCompartir(modeId), urlEina()].filter(Boolean).join(' ');
+    const potCompartirFitxers = () => {
+        try { return !!navigator.canShare?.({ files: [new File([new Blob(['x'])], 'x.png', { type: 'image/png' })] }); }
+        catch { return false; }
+    };
+
+    function modesDisponibles() {
+        return MODES_COMPARTIR.filter(m => estalviAnual(m.id) > 0);
+    }
+
+    function iniciarCompartir() {
+        const disponibles = modesDisponibles();
+        const seccio = document.getElementById('compartir');
+        if (!seccio || !disponibles.length) return;
+        if (!disponibles.some(m => m.id === estatCompartir.mode)) estatCompartir.mode = disponibles[0].id;
+        const svg = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+        const mobil = potCompartirFitxers();
+        seccio.innerHTML = `
+            <div>
+                <h2 id="titol-compartir">Comparteix-ho i anima a tothom a ser sostenible!</h2>
+                <p class="compartir-intro">Tria com vens a treballar i comparteix la imatge amb el CO₂ que evites cada any. La mida s'adapta a cada lloc: vertical per a les històries d'Instagram i quadrada per a WhatsApp, X i Telegram.</p>
+                <fieldset>
+                    <legend>Com vens a treballar</legend>
+                    <div class="xips" id="modes-compartir">${disponibles.map(m => `
+                        <label class="xip"><input type="radio" name="mode-compartir" value="${m.id}"${m.id === estatCompartir.mode ? ' checked' : ''}>
+                            <span>${svg(m.icona())}${esc(m.nom)} <small data-estalvi="${m.id}"></small></span></label>`).join('')}
+                    </div>
+                </fieldset>
+                <p class="frase-compartir" id="frase-compartir"></p>
+                <div class="botons-compartir">
+                    ${mobil
+                        // Al mòbil, el menú de compartir el gestiona el sistema: un botó per mida.
+                        ? `<button type="button" class="boto-xarxa" data-desti="instagram">${svg(LOGOS_XARXES.instagram)}Història d'Instagram</button>
+                           <button type="button" class="boto-xarxa" data-desti="quadrat"><span class="icones-xarxes">${svg(LOGOS_XARXES.whatsapp)}${svg(LOGOS_XARXES.x)}${svg(LOGOS_XARXES.telegram)}</span>WhatsApp, X, Telegram…</button>`
+                        : Object.entries(DESTINS).filter(([, d]) => d.web || d.format === 'story')
+                            .map(([id, d]) => `<button type="button" class="boto-xarxa" data-desti="${id}">${svg(LOGOS_XARXES[id])}${d.nom}</button>`).join('')}
+                    <button type="button" class="boto-xarxa boto-principal" data-desti="baixar-story">${svg(LOGOS_XARXES.baixar)}Descarregar vertical</button>
+                    <button type="button" class="boto-xarxa boto-principal" data-desti="baixar-quadrat">${svg(LOGOS_XARXES.baixar)}Descarregar quadrada</button>
+                </div>
+                <p class="avis-copiat" id="avis-compartir" role="status"></p>
+                <p class="pista-compartir">${mobil
+                    ? "Cada botó obre el menú de compartir del mòbil amb la imatge a la mida adequada: vertical per a les històries i quadrada per als xats i X. Tria l'app i publica."
+                    : "A l'ordinador, la imatge es copia i s'obre la xarxa: enganxa-la amb Ctrl+V (o Cmd+V). Per a Instagram, es descarrega per pujar-la des del mòbil."}</p>
+            </div>
+            <div class="previsualitzacio" id="previsualitzacio">
+                <figure><img id="imatge-story" alt=""><figcaption>Instagram</figcaption></figure>
+                <figure><img id="imatge-quadrat" alt=""><figcaption>WhatsApp, X, Telegram</figcaption></figure>
+            </div>`;
+        seccio.hidden = false;
+        actualitzarCompartir();
+    }
+
+    function afegirBotonsOpcions() {
+        document.querySelectorAll('#resultats article.opcio').forEach(article => {
+            if (article.querySelector('.opcio-compartir')) return;
+            const m = MODES_COMPARTIR.find(x => x.opcio === article.dataset.id);
+            if (!m || !(estalviAnual(m.id) > 0)) return;
+            const div = document.createElement('div');
+            div.className = 'opcio-compartir';
+            const desti = article.querySelector('.co2') || article;
+            div.innerHTML = `<button type="button" class="boto-xarxa boto-petit" data-compartir-mode="${m.id}"><svg viewBox="0 0 24 24" aria-hidden="true">${LOGOS_XARXES.compartir}</svg>Compartir</button>`;
+            desti.appendChild(div);
+        });
+    }
+
+
+    async function actualitzarCompartir() {
+        afegirBotonsOpcions(); // la targeta del cotxe compartit es torna a pintar en canviar-ne les persones
+        const seccio = document.getElementById('compartir');
+        if (!seccio || seccio.hidden || !darrerResultat) return;
+        seccio.querySelectorAll('[data-estalvi]').forEach(el => {
+            const x = xifraCO2(estalviAnual(el.dataset.estalvi));
+            el.textContent = `−${x.num} ${x.unitat === 'kg' ? 'kg' : 't'}`;
+        });
+        const mode = estatCompartir.mode;
+        const text = textCompartir(mode);
+        document.getElementById('frase-compartir').textContent = textAmbEnllac(mode);
+
+        // Es preparen les dues mides per endavant: així, en tocar un botó,
+        // el menú de compartir s'obre a l'instant (el mòbil ho exigeix).
+        const generacio = ++estatCompartir.generacio;
+        estatCompartir.imatges = {};
+        for (const format of ['story', 'quadrat']) {
+            const promesa = dibuixarImatge(mode, format).then(cv => new Promise(r => cv.toBlob(r, 'image/png')));
+            estatCompartir.imatges[format] = promesa;
+            promesa.then(blob => {
+                if (generacio !== estatCompartir.generacio) return;
+                estatCompartir.imatges[format] = blob;
+                const img = document.getElementById(`imatge-${format}`);
+                if (img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
+                img.src = URL.createObjectURL(blob);
+                img.alt = `Imatge ${format === 'story' ? 'vertical' : 'quadrada'}: ${text}`;
+            });
+        }
+    }
+    // ---------- Dibuix de la imatge ----------
+    function carregarImatge(src) {
+        return new Promise((res, rej) => {
+            const img = new Image();
+            img.onload = () => res(img); img.onerror = rej;
+            img.src = src; setTimeout(() => rej(new Error('temps')), 4000);
+        });
+    }
+    function svgAImatge(svg) {
+        const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+        return carregarImatge(url).finally(() => setTimeout(() => URL.revokeObjectURL(url), 1000));
+    }
+    // El cotxe petit del cotxe compartit està reduït: el seu traç es compensa perquè es vegi igual que la resta.
+    const iconaSVG = (traços, color, mida, gruix = 1.5) =>
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${mida}" height="${mida}" fill="none" stroke="${color}" stroke-width="${gruix}" stroke-linecap="round" stroke-linejoin="round">${traços.replace(/stroke-width="2\.42"/g, `stroke-width="${(gruix / 0.62).toFixed(2)}"`)}</svg>`;
+
+    let promesaLogoBlanc = null;
+    function logoBlanc() {
+        return promesaLogoBlanc ??= (async () => {
+            const svg = await textLogoSVG();
+            if (!svg) return null;
+            const vb = svg.match(/viewBox\s*=\s*["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/);
+            const proporcio = vb ? (+vb[1] / +vb[2]) : 3;
+            const img = await svgAImatge(versioBlanca(svg, VERDS.mig));
+            return { img, proporcio };
+        })().catch(() => null);
+    }
+
+    let promesaFont = null;
+    const carregarFont = () => promesaFont ??= Promise.race([
+        Promise.all(['500', '700', '800'].map(p => document.fonts?.load(`${p} 80px "Bricolage Grotesque"`))),
+        new Promise(r => setTimeout(r, 2500))
+    ]).catch(() => null);
+
+    function partirText(cx, text, ample) {
+        const linies = []; let actual = '';
+        for (const paraula of text.split(' ')) {
+            const prova = actual ? `${actual} ${paraula}` : paraula;
+            if (cx.measureText(prova).width > ample && actual) { linies.push(actual); actual = paraula; }
+            else actual = prova;
+        }
+        if (actual) linies.push(actual);
+        // Evita una paraula sola a l'última línia.
+        const n = linies.length;
+        if (n > 1 && !linies[n - 1].includes(' ')) {
+            const prev = linies[n - 2].split(' ');
+            if (prev.length > 2) { linies[n - 1] = `${prev.pop()} ${linies[n - 1]}`; linies[n - 2] = prev.join(' '); }
+        }
+        return linies;
+    }
+    function rectArrodonit(cx, x, y, w, h, r) {
+        cx.beginPath(); cx.roundRect ? cx.roundRect(x, y, w, h, r) : cx.rect(x, y, w, h);
+    }
+    // Ajusta la mida de lletra perquè el text càpiga en l'amplada donada.
+    function midaQueCap(cx, text, pes, mida, ample) {
+        cx.font = `${pes} ${mida}px ${FONT_IMATGE}`;
+        const w = cx.measureText(text).width;
+        return w > ample ? Math.floor(mida * ample / w) : mida;
+    }
+
+    async function dibuixarImatge(modeId, format) {
+        await carregarFont();
+        const m = MODES_COMPARTIR.find(x => x.id === modeId);
+        const g = estalviAnual(modeId);
+        const x = xifraCO2(g);
+        const story = format === 'story';
+        const W = 1080, H = story ? 1920 : 1080;
+        const cv = document.createElement('canvas');
+        cv.width = W; cv.height = H;
+        const cx = cv.getContext('2d');
+
+        // Fons: degradat diagonal de verd bosc a verd llima.
+        const fons = cx.createLinearGradient(0, 0, W * 0.55, H);
+        fons.addColorStop(0, VERDS.fosc);
+        fons.addColorStop(0.42, VERDS.mig);
+        fons.addColorStop(0.78, VERDS.viu);
+        fons.addColorStop(1, VERDS.llima);
+        cx.fillStyle = fons; cx.fillRect(0, 0, W, H);
+        const llum = cx.createRadialGradient(W * 0.9, H * 0.12, 0, W * 0.9, H * 0.12, W * 0.8);
+        llum.addColorStop(0, 'rgba(110, 225, 160, 0.26)');
+        llum.addColorStop(1, 'rgba(110, 225, 160, 0)');
+        cx.fillStyle = llum; cx.fillRect(0, 0, W, H);
+
+        // Icona gegant del mitjà, molt subtil, sortint per la dreta.
+        try {
+            const mida = story ? 900 : 640;
+            // Es dibuixa opaca i s'aplica la transparència a tota la icona alhora:
+            // així els traços que es creuen no es veuen més intensos.
+            const marca = await svgAImatge(iconaSVG(m.icona(), '#ffffff', mida, 1.2));
+            cx.globalAlpha = 0.13;
+            cx.drawImage(marca, W - mida * (m.marcaX ?? 0.68), // el patinet, més al centre perquè s'entengui
+                 story ? H * 0.36 : H * 0.26, mida, mida);
+            cx.globalAlpha = 1;
+        } catch { /* sense marca */ }
+
+        const M = story ? 96 : 80;          // marge lateral
+        const ampleText = W - M * 2;
+        let y = story ? 250 : 80;           // a les stories, fora de la zona de la capçalera d'Instagram
+
+        // Logotip de l'hospital en blanc (o el nom, si no es pot carregar).
+        const logo = await logoBlanc();
+        const ampleLogo = story ? 430 : 340;
+        if (logo) {
+            const alt = ampleLogo / logo.proporcio;
+            cx.drawImage(logo.img, M, y, ampleLogo, alt);
+            y += alt;
+        } else {
+            cx.fillStyle = '#fff'; cx.textBaseline = 'top';
+            cx.font = `800 ${story ? 54 : 44}px ${FONT_IMATGE}`; cx.fillText('Bellvitge', M, y);
+            cx.font = `500 ${story ? 30 : 26}px ${FONT_IMATGE}`; cx.fillText('Hospital Universitari', M, y + (story ? 62 : 52));
+            y += story ? 100 : 84;
+        }
+
+        // Frase.
+        y += story ? 190 : 90;
+        const midaFrase = story ? 68 : 52;
+        cx.font = `700 ${midaFrase}px ${FONT_IMATGE}`;
+        cx.fillStyle = '#ffffff'; cx.textBaseline = 'top';
+        const frase = `${m.frase.replace(/'/g, '’')} i evito l’emissió de`;
+        for (const l of partirText(cx, frase, ampleText)) { cx.fillText(l, M, y); y += midaFrase * 1.14; }
+
+        // La xifra: l'element protagonista.
+        const midaXifra = midaQueCap(cx, x.num, 800, story ? 330 : 230, ampleText);
+        cx.font = `800 ${midaXifra}px ${FONT_IMATGE}`;
+        cx.textBaseline = 'alphabetic';
+        y += midaXifra * 0.86;
+        cx.fillText(x.num, M - midaXifra * 0.04, y);
+        const ampleNum = cx.measureText(x.num).width;
+        const midaUnitat = story ? 76 : 58;
+        cx.font = `800 ${midaUnitat}px ${FONT_IMATGE}`;
+        const unitatAlCostat = ampleNum + 24 + cx.measureText(x.unitat).width < ampleText;
+        if (unitatAlCostat) cx.fillText(x.unitat, M + ampleNum + 20, y);
+        y += midaXifra * 0.17;
+        cx.textBaseline = 'top';
+        cx.font = `700 ${midaUnitat}px ${FONT_IMATGE}`;
+        cx.fillText(unitatAlCostat ? 'de CO₂ a l’any' : `${x.unitat} de CO₂ a l’any`, M, y);
+        y += midaUnitat * 1.2;
+
+        // Equivalència en arbres.
+        y += story ? 40 : 26;
+        const nArbres = arbres(g);
+        const textArbres = `Com ${nArbres === 1 ? 'un arbre' : `${nArbres.toLocaleString('ca-ES')} arbres`} absorbint CO₂ tot un any`;
+        const midaArbres = story ? 36 : 30;
+        cx.font = `500 ${midaArbres}px ${FONT_IMATGE}`;
+        const ampleArbres = Math.min(ampleText, cx.measureText(textArbres).width + 56);
+        cx.fillStyle = 'rgba(8, 54, 38, 0.28)';
+        rectArrodonit(cx, M, y, ampleArbres, midaArbres + 34, (midaArbres + 34) / 2); cx.fill();
+        cx.fillStyle = '#ffffff'; cx.textBaseline = 'middle';
+        cx.fillText(textArbres, M + 28, y + (midaArbres + 34) / 2 + 1);
+
+        // Peu: etiqueta i pregunta, sobre la part llima del degradat.
+        const etiqueta = `#${HASHTAG}`;
+        const farciment = story ? 38 : 30;
+        const midaEtiqueta = midaQueCap(cx, etiqueta, 800, story ? 56 : 44, ampleText - farciment * 2);
+        const altEtiqueta = midaEtiqueta + (story ? 44 : 34);
+        const midaRepte = story ? 38 : 30;
+        const yEtiqueta = story ? H - 500 : H - 64 - altEtiqueta - midaRepte * 2.9;
+        cx.font = `800 ${midaEtiqueta}px ${FONT_IMATGE}`;
+        const ampleEtiqueta = cx.measureText(etiqueta).width + farciment * 2;
+        cx.fillStyle = VERDS.tinta;
+        rectArrodonit(cx, M, yEtiqueta, ampleEtiqueta, altEtiqueta, altEtiqueta / 2); cx.fill();
+        cx.fillStyle = VERDS.llima; cx.textBaseline = 'middle';
+        cx.fillText(etiqueta, M + farciment, yEtiqueta + altEtiqueta / 2 + 3);
+
+        cx.fillStyle = VERDS.tinta; cx.textBaseline = 'top';
+        cx.font = `700 ${midaRepte}px ${FONT_IMATGE}`;
+        const yRepte = yEtiqueta + altEtiqueta + (story ? 40 : 22);
+        cx.fillText('I tu, quina emissió de CO₂ evites?', M, yRepte);
+        if (story) {
+            cx.font = `500 ${midaRepte - 6}px ${FONT_IMATGE}`;
+            cx.fillText('Calcula-ho amb l’eina de mobilitat de l’hospital', M, yRepte + midaRepte * 1.35);
+        }
+        // L'adreça de l'eina, sense https://
+        cx.font = `800 ${midaRepte}px ${FONT_IMATGE}`;
+        cx.fillText(WEB_IMATGE, M, yRepte + midaRepte * (story ? 2.75 : 1.3));
+        return cv;
+    }
+
+    // ---------- Accions ----------
+    const nomFitxer = format => `bellvitge-mobilitat-sostenible-${estatCompartir.mode}-${format}.png`;
+    function avisCompartir(text) {
+        const el = document.getElementById('avis-compartir');
+        if (!el) return;
+        el.textContent = text;
+        clearTimeout(avisCompartir.t);
+        avisCompartir.t = setTimeout(() => { el.textContent = ''; }, 6000);
+    }
+    const imatge = format => Promise.resolve(estatCompartir.imatges[format]);
+    function baixarImatge(blob, nom) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = nom;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+
+    document.getElementById('resultats').addEventListener('change', e => {
+        if (e.target.name === 'mode-compartir') { estatCompartir.mode = e.target.value; actualitzarCompartir(); }
+    });
+
+    document.getElementById('resultats').addEventListener('click', e => {
+        const boto = e.target.closest('[data-compartir-mode]');
+        if (!boto) return;
+        const mode = boto.dataset.compartirMode;
+        const radio = document.querySelector(`#compartir input[name="mode-compartir"][value="${mode}"]`);
+        if (radio && !radio.checked) { radio.checked = true; estatCompartir.mode = mode; actualitzarCompartir(); }
+        const seccio = document.getElementById('compartir');
+        const suau = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        seccio.scrollIntoView({ behavior: suau ? 'smooth' : 'auto', block: 'start' });
+        radio?.focus({ preventScroll: true });
+        seccio.classList.remove('destacat'); void seccio.offsetWidth; seccio.classList.add('destacat');
+    });
+
+
+    document.getElementById('resultats').addEventListener('click', async e => {
+        const boto = e.target.closest('#compartir [data-desti]');
+        if (!boto) return;
+        const id = boto.dataset.desti;
+        const mode = estatCompartir.mode;
+
+        if (id === 'baixar-story' || id === 'baixar-quadrat') {
+            const format = id === 'baixar-story' ? 'story' : 'quadrat';
+            baixarImatge(await imatge(format), nomFitxer(format));
+            avisCompartir(`Imatge ${format === 'story' ? 'vertical' : 'quadrada'} descarregada.`);
+            return;
+        }
+        const desti = DESTINS[id];
+
+        // Mòbil: menú de compartir del sistema, sempre amb la imatge.
+        if (potCompartirFitxers()) {
+            try {
+                const text = textAmbEnllac(mode);
+                // Algunes apps (sobretot WhatsApp a l'iPhone) es queden la imatge però
+                // descarten el text: també el copiem perquè es pugui enganxar com a peu de foto.
+                if (id !== 'instagram') navigator.clipboard?.writeText(text).catch(() => {});
+                const blob = await imatge(desti.format);
+                const fitxer = new File([blob], nomFitxer(desti.format), { type: 'image/png' });
+                const compartit = navigator.share(id === 'instagram' ? { files: [fitxer] } : { files: [fitxer], text });
+                if (id !== 'instagram') avisCompartir("Imatge i text a punt. Si l'app no mostra el text, mantén premut i enganxa'l: ja està copiat.");
+                await compartit;
+            } catch (err) {
+                if (err?.name === 'AbortError') return; // s'ha tancat el menú
+                baixarImatge(await imatge(desti.format), nomFitxer(desti.format));
+                avisCompartir("No s'ha pogut obrir el menú de compartir: s'ha descarregat la imatge.");
+            }
+            return;
+        }
+
+        // Ordinador.
+        if (id === 'instagram') {
+            baixarImatge(await imatge('story'), nomFitxer('story'));
+            avisCompartir('Imatge vertical descarregada. Passa-la al mòbil i puja-la a Instagram com a Història.');
+            return;
+        }
+        // La còpia s'inicia abans d'obrir la pestanya, mentre la pàgina té el focus.
+        let copia = null;
+        try {
+            if (navigator.clipboard?.write && window.ClipboardItem)
+                copia = navigator.clipboard.write([new ClipboardItem({ 'image/png': imatge(desti.format) })]);
+        } catch { copia = null; }
+        copia?.catch(() => {}); // l'error es tracta a sota
+        window.open(desti.web(textAmbEnllac(mode)), '_blank', 'noopener');
+        try {
+            if (!copia) throw new Error('sense porta-retalls');
+            await copia;
+            avisCompartir(`Imatge copiada. Enganxa-la a ${desti.nom} amb Ctrl+V (o Cmd+V).`);
+        } catch {
+            baixarImatge(await imatge(desti.format), nomFitxer(desti.format));
+            avisCompartir(`Imatge descarregada. Adjunta-la a ${desti.nom} abans de publicar.`);
+        }
     });
 </script>
 </body>
