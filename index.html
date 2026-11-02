@@ -94,7 +94,7 @@
     .logo img.logo-blanc { filter: brightness(0) invert(1); } /* capa que el fa blanc */
     .logo-text { font-weight: 800; font-size: 1.15rem; line-height: 1.15; color: #fff; }
     .logo-text span { display: block; font-weight: 500; color: rgba(255,255,255,.8); font-size: 0.85rem; }
-    .nom-eina { padding-left: 18px; border-left: 1px solid rgba(255,255,255,.35); font-size: 1rem; font-weight: 700; color: #fff; }
+    .nom-eina { padding-left: 18px; border-left: 1px solid rgba(255,255,255,.35); font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.25; }
     .area { margin-left: auto; font-size: 0.85rem; color: rgba(255,255,255,.8); }
 
     /* Icona gegant i subtil, com a les stories */
@@ -312,7 +312,7 @@
             <a class="logo" id="logo-capcalera" href="https://bellvitgehospital.cat/ca" aria-label="Hospital Universitari de Bellvitge">
                 <span class="logo-text">Bellvitge<span>Hospital Universitari</span></span>
             </a>
-            <span class="nom-eina">Mobilitat sostenible</span>
+            <span class="nom-eina">Calculadora de mobilitat sostenible</span>
         </div>
         <div class="titol-pagina">
             <h1>Com vens a treballar?</h1>
@@ -373,16 +373,10 @@
 
     const DESTI_LAT = 41.3438;
     const DESTI_LON = 2.1049;
-    // Destí per al cotxe: entrada principal de l'hospital (Carrer de la Feixa
-    // Llarga). Amb el punt general, la ruta feia voltes i mitja volta al final.
-    const ACCES_COTXE = { lat: 41.34477, lon: 2.10423 };
-    // Accessos en cotxe (coordenades de Google Places). Es calcula la ruta cap a
-    // tots tres i es tria la més ràpida, perquè segons d'on vens convé un o altre.
-    const ACCESSOS_COTXE = [
-        { nom: "l'entrada principal (Feixa Llarga)", lat: 41.34477, lon: 2.10423 },
-        { nom: "l'aparcament del carrer de la Residència", lat: 41.34495, lon: 2.10566 },
-        { nom: "l'aparcament de la Feixa Llarga", lat: 41.34329, lon: 2.10340 }
-    ];
+    // Punt d'arribada en cotxe: una sola ubicació (41°20'38.8"N 2°06'18.0"E).
+    // Una sola destinació = 2 peticions a TomTom per cerca (anada i tornada).
+    const ACCES_COTXE = { nom: "l'hospital", lat: 41.344111, lon: 2.105000 };
+    const ACCESSOS_COTXE = [ACCES_COTXE];
     const TRAJECTES_MES = 40; // 20 dies x anada i tornada
     // Rectangle aproximat de Catalunya per acotar el geocodificador.
     const CAT = { minLon: 0.15, maxLon: 3.35, minLat: 40.5, maxLat: 42.9 };
@@ -1220,7 +1214,7 @@
         if (CLAU_TOMTOM) {
             const anades = await Promise.all(ACCESSOS_COTXE.map(a =>
                 calcularRutaTomTom(lat, lon, a.lat, a.lon, { arriveAt: arribada }).then(r => ({ ...r, acces: a }))));
-            console.log('Cotxe TomTom: ruta cap a cada accés (es tria la més ràpida)');
+            console.log('Cotxe TomTom: anada i tornada (2 peticions)');
             console.table(anades.map(r => ({ acces: r.acces.nom, km: r.ok ? Math.round(r.distanciaKm * 10) / 10 : '-', min: r.ok ? Math.round(r.duradaS / 60) : 'error' })));
             const valides = anades.filter(r => r.ok);
             if (valides.length) {
